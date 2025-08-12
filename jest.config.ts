@@ -15,6 +15,7 @@ const config: Config = {
   collectCoverageFrom: [
     'src/lib/crypto.ts',
     'src/lib/realtime.ts',
+    'src/lib/display.ts',
   ],
   coverageThreshold: {
     global: {
