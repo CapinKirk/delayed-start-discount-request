@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "node scripts/env-ensure-db.mjs && prisma generate && prisma migrate deploy && next build",
+    "build": "node scripts/with-db-url.mjs",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
