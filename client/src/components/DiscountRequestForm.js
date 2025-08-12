@@ -119,7 +119,6 @@ const DiscountRequestForm = () => {
       loadOpportunities(watchedAccount);
       setSelectedAccount(watchedAccount);
       setSelectedOpportunity('');
-      setSelectedProject('');
       setValue('opportunity', '');
       setValue('project', '');
       setShowProjectDetails(false);
@@ -142,7 +141,6 @@ const DiscountRequestForm = () => {
   useEffect(() => {
     if (watchedProject) {
       loadProjectDetails(watchedProject);
-      setSelectedProject(watchedProject);
       setShowProjectDetails(true);
       setShowJustification(true);
     }
