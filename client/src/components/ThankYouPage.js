@@ -6,20 +6,20 @@ const ThankYouPage = () => {
   const navigate = useNavigate();
   const [celebrationGif, setCelebrationGif] = useState('');
 
-  // Celebration GIFs for success
-  const celebrationGifs = [
-    'https://media.giphy.com/media/26u4cqi2I30juCOGY/giphy.gif',
-    'https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif',
-    'https://media.giphy.com/media/3o7TKDEqP6VJHaZSEA/giphy.gif',
-    'https://media.giphy.com/media/3o7TKDEqP6VJHaZSEA/giphy.gif',
-    'https://media.giphy.com/media/3o7TKDEqP6VJHaZSEA/giphy.gif'
-  ];
-
   useEffect(() => {
+    // Celebration GIFs for success - defined inside useEffect to prevent dependency changes
+    const celebrationGifs = [
+      'https://media.giphy.com/media/26u4cqi2I30juCOGY/giphy.gif',
+      'https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif',
+      'https://media.giphy.com/media/3o7TKDEqP6VJHaZSEA/giphy.gif',
+      'https://media.giphy.com/media/3o7TKDEqP6VJHaZSEA/giphy.gif',
+      'https://media.giphy.com/media/3o7TKDEqP6VJHaZSEA/giphy.gif'
+    ];
+    
     // Select a random celebration GIF
     const randomIndex = Math.floor(Math.random() * celebrationGifs.length);
     setCelebrationGif(celebrationGifs[randomIndex]);
-  }, [celebrationGifs]);
+  }, []); // Empty dependency array since celebrationGifs is now defined inside
 
   const handleSubmitAnother = () => {
     navigate('/');
