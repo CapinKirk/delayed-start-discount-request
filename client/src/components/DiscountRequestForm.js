@@ -120,7 +120,7 @@ const DiscountRequestForm = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [mockData.accounts]);
 
   // Load opportunities for selected account
   const loadOpportunities = useCallback(async (accountName) => {
@@ -136,7 +136,7 @@ const DiscountRequestForm = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [mockData.opportunities]);
 
   // Load projects for selected account and opportunity
   const loadProjects = useCallback(async (accountName, opportunityName) => {
@@ -152,7 +152,7 @@ const DiscountRequestForm = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [mockData.projects]);
 
   // Load project details
   const loadProjectDetails = useCallback(async (projectName) => {
@@ -177,7 +177,7 @@ const DiscountRequestForm = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [mockData.projectDetails]);
 
   // Load accounts on component mount
   useEffect(() => {
