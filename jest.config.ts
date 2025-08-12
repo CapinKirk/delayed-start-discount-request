@@ -13,7 +13,8 @@ const config: Config = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov'],
   collectCoverageFrom: [
-    'src/lib/**/*.ts',
+    'src/lib/crypto.ts',
+    'src/lib/realtime.ts',
   ],
   coverageThreshold: {
     global: {

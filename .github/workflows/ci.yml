@@ -30,12 +30,18 @@ jobs:
       - name: Unit tests
         run: npm run test:unit -- --coverage --coverageReporters=text-summary
         working-directory: ./por-chat
-      - name: Integration tests
-        run: echo "skipping for scaffold" && true
+      - name: Install Playwright
+        run: npx playwright install --with-deps
         working-directory: ./por-chat
       - name: E2E tests
-        run: echo "skipping for scaffold" && true
+        run: npx playwright test
         working-directory: ./por-chat
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: por-chat/playwright-report
       - name: Build
         run: npm run build
         working-directory: ./por-chat
