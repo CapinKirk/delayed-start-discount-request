@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+export const runtime = "nodejs";
 import { WebClient } from "@slack/web-api";
 import { PrismaClient } from "@/generated/prisma";
 import { encryptString } from "@/lib/crypto";
@@ -20,14 +21,20 @@ export async function GET(req: NextRequest) {
 
   let data: any;
   try {
+    const body = new URLSearchParams({ client_id, client_secret, code, redirect_uri });
     const resp = await fetch("https://slack.com/api/oauth.v2.access", {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ client_id, client_secret, code, redirect_uri }),
+      body,
+      cache: "no-store",
     });
-    data = await resp.json();
-  } catch {
-    return NextResponse.json({ error: "slack_exchange_failed" }, { status: 502 });
+    const text = await resp.text();
+    try { data = JSON.parse(text); } catch { data = null; }
+    if (!resp.ok) {
+      return NextResponse.json({ error: "slack_exchange_http_error", status: resp.status, body: text.slice(0, 500) }, { status: 502 });
+    }
+  } catch (e: any) {
+    return NextResponse.json({ error: "slack_exchange_failed", message: String(e?.message || e) }, { status: 502 });
   }
   if (!data?.ok) {
     return NextResponse.json({ error: data?.error || "oauth_failed" }, { status: 400 });
@@ -56,7 +63,7 @@ export async function GET(req: NextRequest) {
           bot_token_enc: encryptString(bot_token),
         },
       });
-    } catch {
+    } catch (e: any) {
       // ignore persistence errors in environments without a reachable DB
     } finally {
       await prisma.$disconnect();
