@@ -1,0 +1,146 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Core models per requirements
+
+model AdminUser {
+  id                    String   @id @default(cuid())
+  username              String   @unique
+  password_hash         String
+  must_change_password  Boolean  @default(true)
+  created_at            DateTime @default(now())
+}
+
+model SlackConnection {
+  id                 String   @id @default(cuid())
+  team_id            String   @unique
+  team_name          String
+  bot_token_enc      String
+  signing_secret_enc String
+  channel_id         String
+  takeover_enabled   Boolean  @default(true)
+  reaction_claim_emoji String @default("✅")
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+}
+
+model Agent {
+  id            String  @id @default(cuid())
+  slack_user_id String  @unique
+  display_name  String
+  active        Boolean @default(true)
+  order_index   Int
+}
+
+model RoutingPolicy {
+  id                         String @id @default(cuid())
+  timeout_seconds            Int    @default(30)
+  human_suppression_minutes  Int    @default(5)
+}
+
+model BusinessHours {
+  id               String @id @default(cuid())
+  tz               String
+  weekday          Int    // 0-6 (Sun-Sat)
+  start_local_time String // HH:mm
+  end_local_time   String // HH:mm
+}
+
+model AIConfig {
+  id            String  @id @default(cuid())
+  model         String  @default("gpt-5")
+  system_prompt String
+  kb_text       String  @default("")
+  updated_at    DateTime @updatedAt
+}
+
+model WidgetTheme {
+  id         String @id @default(cuid())
+  colors     Json
+  position   String
+  greeting   String
+  avatar_url String?
+  public_id  String @unique
+  // Role masking and unified persona
+  mask_roles Boolean @default(true)
+  unified_display_name String @default("Support")
+  // Auto popup config
+  auto_open_enabled   Boolean @default(false)
+  auto_open_delay_ms  Int     @default(5000)
+  auto_open_greeting  String  @default("")
+  auto_open_frequency String  @default("once_per_session") // once_per_session | every_visit
+}
+
+enum RoutingState {
+  ai_only
+  pending_agent
+  agent_active
+}
+
+enum ConversationStatus {
+  OPEN
+  CLOSED
+}
+
+enum MessageRole {
+  user
+  ai
+  agent
+  system
+}
+
+model Conversation {
+  id                String  @id @default(cuid())
+  session_id        String
+  slack_channel_id  String
+  slack_thread_ts   String?
+  status            ConversationStatus @default(OPEN)
+  started_at        DateTime @default(now())
+  closed_at         DateTime?
+  assigned_agent_id String?
+  assigned_at       DateTime?
+  human_suppressed_until DateTime?
+  routing_state     RoutingState @default(ai_only)
+  event_seq         Int @default(0)
+  controller_message_ts String?
+  controller_fingerprint String?
+  messages          Message[]
+
+  @@index([session_id])
+}
+
+model RoundRobinState {
+  id         String  @id @default("state")
+  last_index Int     @default(0)
+}
+
+model Message {
+  id               String  @id @default(cuid())
+  conversation     Conversation @relation(fields: [conversation_id], references: [id])
+  conversation_id  String
+  role             MessageRole
+  text             String
+  slack_ts         String?
+  created_at       DateTime @default(now())
+}
+
+// For idempotency/deduplication of Slack and client events
+model EventDedupe {
+  id         String  @id @default(cuid())
+  source     String
+  event_id   String  @unique
+  created_at DateTime @default(now())
+}

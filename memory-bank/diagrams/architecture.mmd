@@ -1,0 +1,34 @@
+graph TD
+  subgraph "Browser"
+    U["Visitor"]
+    W["Chat Widget (embed.js)"]
+    U --> W
+  end
+
+  W -- "WebSocket/HTTPS" --> GW["Realtime Gateway"]
+
+  subgraph "Backend"
+    GW --> ORCH["Chat Orchestrator"]
+    ORCH --> RR["Agent Router (Round-robin)"]
+    ORCH --> AI["OpenAI GPT-5 Client"]
+    ORCH --> DB[("PostgreSQL")] 
+    ORCH --> QS["Queue/Jobs (optional)"]
+  end
+
+  subgraph "Slack"
+    APP["Slack App + Bot User"]
+    CH["#live-chat Channel"]
+    APP <-- "Events / Socket Mode" --> ORCH
+    ORCH -- "chat.postMessage / replies" --> APP
+    APP <-- "threads" --> CH
+  end
+
+  subgraph "Admin"
+    ADMIN["Admin Portal (Next.js)"]
+    ADMIN --> ORCH
+    ADMIN --> DB
+    ADMIN --> OAUTH["Slack OAuth"]
+  end
+
+  GW --> W
+  AI <--> OAAPI["OpenAI API"]

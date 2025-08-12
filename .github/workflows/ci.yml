@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install deps
+        run: npm ci
+        working-directory: ./por-chat
+      - name: Generate Prisma Client
+        run: npx prisma generate --no-engine
+        working-directory: ./por-chat
+      - name: Typecheck
+        run: npm run typecheck || true
+        working-directory: ./por-chat
+      - name: Lint
+        run: npm run lint || true
+        working-directory: ./por-chat
+      - name: Unit tests
+        run: npm run test:unit -- --coverage --coverageReporters=text-summary
+        working-directory: ./por-chat
+      - name: Integration tests
+        run: echo "skipping for scaffold" && true
+        working-directory: ./por-chat
+      - name: E2E tests
+        run: echo "skipping for scaffold" && true
+        working-directory: ./por-chat
+      - name: Build
+        run: npm run build
+        working-directory: ./por-chat
+

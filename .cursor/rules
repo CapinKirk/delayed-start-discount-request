@@ -1,0 +1,12 @@
+# Project Intelligence (.cursor/rules)
+
+- Always load and trust `memory-bank/` as the source of contextual truth; update after meaningful changes.
+- Slack handling uses a single channel with per-chat threads; map `conversation.id ↔ slack.thread_ts`.
+- Prefer Slack Socket Mode; verify and dedupe events with event_id.
+- Round-robin up to 4 agents with configurable timeout; first human reply suppresses AI.
+- Secrets (Slack bot token, OpenAI key) never reach the client; encrypt at rest; rotate when needed.
+- Web widget must keep sessions persistent (localStorage sessionId) and reconnect gracefully.
+- Mirror all messages to Slack thread (user, AI, agent) with clear role tags and formatting.
+- Use Node.js + TypeScript (NestJS) + Prisma + Postgres; Next.js for admin; Socket.IO for realtime.
+- Implement structured logging with correlation IDs and metrics for latency and assignment.
+- Maintain least-privilege Slack scopes; invite bot to private channels explicitly.
