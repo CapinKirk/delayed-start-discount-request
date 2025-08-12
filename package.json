@@ -11,6 +11,7 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
+    "db:seed": "ts-node --transpile-only prisma/seed.ts",
     "test": "jest --passWithNoTests",
     "test:unit": "jest --passWithNoTests",
     "test:e2e": "playwright test",

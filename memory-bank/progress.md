@@ -1,16 +1,19 @@
 # Progress
 
 ## Status
-- Memory Bank created and initial architecture captured.
+- Memory Bank synced with current codebase.
+- Unit tests passing; typecheck clean.
+- Slack OAuth/events/commands/interactivity endpoints implemented.
+- Chat APIs and AI streaming implemented; widget MVP present.
 
 ## Milestones
-- [ ] Backend scaffold (NestJS + Prisma)
-- [ ] Slack app OAuth install + bot posting to channel
-- [ ] Widget MVP (embed + persistent session + realtime)
-- [ ] AI streaming responses and mirroring to Slack
-- [ ] Two-way Slack↔web sync
-- [ ] Round-robin routing + timeout reassignment
-- [ ] Admin portal (Slack, agents, hours, AI, widget)
-- [ ] Security, observability, and error handling
+- [x] Backend scaffold (Next.js App Router APIs + Prisma)
+- [x] Slack app OAuth install endpoints
+- [x] Widget MVP (embed + persistent session + realtime)
+- [x] AI streaming responses endpoint
+- [x] Two-way Slack↔web sync basics (agent replies mirrored; AI mirrored to Slack)
+- [x] Round-robin routing + timeout reassignment cron endpoint
+- [x] Admin portal pages and APIs (Slack, agents, hours, routing, AI, widget)
+- [ ] Security hardening, observability, and error handling
 - [ ] Staging validation in Slack dev workspace
 - [ ] Production rollout

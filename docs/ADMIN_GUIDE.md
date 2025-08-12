@@ -36,3 +36,4 @@ Set these in Vercel and `.env` (never commit real values):
 ## Security
 - Keep RLS on in Supabase. Anon key in client only; service role server-only.
 - Keys stored as envs; never embedded in client bundle.
+

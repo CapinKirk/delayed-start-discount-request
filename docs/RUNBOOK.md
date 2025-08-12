@@ -20,3 +20,4 @@
 
 ## Rotating Secrets
 - Rotate Slack, Supabase, and OpenAI keys in provider dashboards; update Vercel envs; redeploy
+

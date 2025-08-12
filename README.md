@@ -3,7 +3,7 @@
 ## Quick start
 
 - Requirements: Node 20+, npm, a Supabase project (URL + anon + service keys), pooled Postgres URL, Slack App creds, OpenAI API key
-- Copy `ENV.EXAMPLE.txt` to `.env` and fill values
+- Copy `ENV.EXAMPLE.txt` to `.env` and fill values (on Vercel, set `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `SLACK_*`, `NEXT_PUBLIC_*`).
 - Install and build:
   - `npm ci`
   - `npx prisma generate`

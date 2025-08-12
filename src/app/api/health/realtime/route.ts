@@ -12,6 +12,9 @@ export async function GET(){
     await prisma.$disconnect();
   }
   try {
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+      throw new Error('missing supabase');
+    }
     const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!);
     // attempt lightweight channel subscribe/unsubscribe
     const ch = supabase.channel('healthcheck', { config: { broadcast: { self: true } } });
@@ -22,5 +25,6 @@ export async function GET(){
     return NextResponse.json({ ok: false, db: true, realtime: false }, { status: 500 });
   }
 }
+
 
 
