@@ -13,7 +13,6 @@ const DiscountRequestForm = () => {
   const [projects, setProjects] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState('');
   const [selectedOpportunity, setSelectedOpportunity] = useState('');
-  const [selectedProject, setSelectedProject] = useState('');
   const [projectDetails, setProjectDetails] = useState(null);
   const [showProjectDetails, setShowProjectDetails] = useState(false);
   const [showJustification, setShowJustification] = useState(false);
@@ -23,8 +22,7 @@ const DiscountRequestForm = () => {
     handleSubmit,
     formState: { errors, isValid },
     watch,
-    setValue,
-    reset
+    setValue
   } = useForm({
     mode: 'onChange'
   });
