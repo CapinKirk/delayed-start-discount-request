@@ -7,8 +7,7 @@ export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
   if (!code) return NextResponse.json({ error: "missing code" }, { status: 400 });
 
-  // Use hard-coded Client ID to avoid env drift with authorize step
-  const client_id = "215343527091.9352285443297";
+  const client_id = process.env.SLACK_CLIENT_ID || "";
   const client_secret = process.env.SLACK_CLIENT_SECRET || "";
   const origin = req.headers.get("x-forwarded-host")
     ? `${req.headers.get("x-forwarded-proto") || "https"}://${req.headers.get("x-forwarded-host")}`

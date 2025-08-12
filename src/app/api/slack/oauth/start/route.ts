@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  // Hard-coded Slack App Client ID to avoid env misconfiguration
-  const CLIENT_ID = "215343527091.9352285443297";
-  const clientId = CLIENT_ID;
+  const clientId = process.env.SLACK_CLIENT_ID || "";
   const origin = req.headers.get("x-forwarded-host")
     ? `${req.headers.get("x-forwarded-proto") || "https"}://${req.headers.get("x-forwarded-host")}`
     : new URL(req.url).origin;
