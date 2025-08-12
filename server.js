@@ -65,26 +65,23 @@ app.use(helmet({
   }
 }));
 
-// Rate limiting
+// Rate limiting and throttling
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
-  message: {
-    error: 'Too many requests from this IP, please try again later.'
-  },
-  standardHeaders: true,
-  legacyHeaders: false
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.'
 });
 
-const speedLimiter = slowDown({
+const slowDownMiddleware = slowDown({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  delayAfter: 50, // allow 50 requests per 15 minutes, then...
-  delayMs: 500 // begin adding 500ms of delay per request above 50
+  delayAfter: 5, // allow 5 requests per 15 minutes, then...
+  delayMs: () => 500, // begin adding 500ms of delay per request above 100
+  maxDelayMs: 20000 // max delay of 20 seconds
 });
 
 // Apply rate limiting to all routes
 app.use(limiter);
-app.use(speedLimiter);
+app.use(slowDownMiddleware);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -112,11 +109,41 @@ app.use('/api/slack', slackRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
+  res.json({
+    status: 'healthy',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV
+    service: 'delayed-start-discount-request',
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Test endpoint for mock data (no auth required)
+app.get('/test', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Mock mode is working!',
+    data: {
+      accounts: [
+        'Test Account 1',
+        'Test Account 2', 
+        'Point of Rental',
+        'ABC Company',
+        'XYZ Corporation'
+      ],
+      opportunities: [
+        'Test Opportunity 1',
+        'Test Opportunity 2',
+        'Implementation Project',
+        'Support Contract'
+      ],
+      projects: [
+        'Project Alpha',
+        'Project Beta',
+        'Phase 1 Implementation',
+        'Phase 2 Rollout'
+      ]
+    },
+    timestamp: new Date().toISOString()
   });
 });
 

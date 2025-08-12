@@ -85,11 +85,17 @@ router.get('/accounts', async (req, res) => {
  * GET /api/opportunities
  * Get opportunities for a specific account
  */
-router.get('/opportunities', [
-  body('accountName').notEmpty().trim().escape()
-], validateRequest, async (req, res) => {
+router.get('/opportunities', async (req, res) => {
   try {
-    const { accountName } = req.body;
+    const { accountName } = req.query;
+    
+    if (!accountName) {
+      return res.status(400).json({
+        error: 'Missing required parameter',
+        message: 'accountName is required'
+      });
+    }
+    
     logger.info(`GET /api/opportunities - Fetching opportunities for account: ${accountName}`);
     
     const opportunities = await getOpportunities(accountName);
@@ -112,12 +118,17 @@ router.get('/opportunities', [
  * GET /api/projects
  * Get projects for a specific account and opportunity
  */
-router.get('/projects', [
-  body('accountName').notEmpty().trim().escape(),
-  body('opportunityName').notEmpty().trim().escape()
-], validateRequest, async (req, res) => {
+router.get('/projects', async (req, res) => {
   try {
-    const { accountName, opportunityName } = req.body;
+    const { accountName, opportunityName } = req.query;
+    
+    if (!accountName || !opportunityName) {
+      return res.status(400).json({
+        error: 'Missing required parameters',
+        message: 'Both accountName and opportunityName are required'
+      });
+    }
+    
     logger.info(`GET /api/projects - Fetching projects for account: ${accountName}, opportunity: ${opportunityName}`);
     
     const projects = await getProjects(accountName, opportunityName);

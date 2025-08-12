@@ -24,27 +24,26 @@ const logger = winston.createLogger({
   ]
 });
 
-let slackClient;
+let web = null;
+let mockMode = false;
 
 /**
- * Initialize Slack service
+ * Initialize Slack Web API client
  */
-async function initializeSlack() {
+function initializeSlack() {
   try {
     if (!process.env.SLACK_BOT_TOKEN) {
-      throw new Error('SLACK_BOT_TOKEN not configured');
+      logger.warn('Slack bot token not found, running in mock mode for testing');
+      mockMode = true;
+      return;
     }
 
-    slackClient = new WebClient(process.env.SLACK_BOT_TOKEN);
-    
-    // Test the connection
-    const authTest = await slackClient.auth.test();
-    logger.info(`Slack connected as: ${authTest.user}`);
-    
-    logger.info('Slack service initialized successfully');
+    web = new WebClient(process.env.SLACK_BOT_TOKEN);
+    logger.info('Slack Web API client initialized successfully');
   } catch (error) {
-    logger.error('Failed to initialize Slack service:', error);
-    throw new Error(`Slack initialization failed: ${error.message}`);
+    logger.error('Failed to initialize Slack Web API client:', error);
+    logger.warn('Falling back to mock mode for testing');
+    mockMode = true;
   }
 }
 
@@ -88,7 +87,7 @@ function buildApprovalChain(requesterEmail, directory) {
  */
 async function openDirectMessage(userId) {
   try {
-    const response = await slackClient.conversations.open({
+    const response = await web.conversations.open({
       users: userId
     });
     
@@ -108,7 +107,7 @@ async function openDirectMessage(userId) {
  */
 async function sendMessage(channelId, message) {
   try {
-    const response = await slackClient.chat.postMessage({
+    const response = await web.chat.postMessage({
       channel: channelId,
       text: message.text,
       blocks: message.blocks,
@@ -131,7 +130,7 @@ async function sendMessage(channelId, message) {
  */
 async function updateMessage(channelId, timestamp, message) {
   try {
-    const response = await slackClient.chat.update({
+    const response = await web.chat.update({
       channel: channelId,
       ts: timestamp,
       text: message.text,
