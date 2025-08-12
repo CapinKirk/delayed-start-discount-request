@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delayed Start Discount Request</title>
+    <link rel="stylesheet" href="Styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Delayed Start Discount Request</h1>
+            <p>Submit a request for delayed start discount consideration</p>
+        </header>
+
+        <!-- Main Form -->
+        <main class="main-content" id="mainForm">
+            <form id="discountForm" class="form">
+                <!-- Project Selection Section -->
+                <div class="form-section">
+                    <h2>Project Selection</h2>
+                    
+                    <div class="form-group">
+                        <label for="accountSelect" class="required">Account</label>
+                        <select id="accountSelect" name="account" required>
+                            <option value="">Select an Account</option>
+                        </select>
+                        <div class="error-message" id="accountError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="opportunitySelect" class="required">Opportunity</label>
+                        <select id="opportunitySelect" name="opportunity" required disabled>
+                            <option value="">Select an Opportunity</option>
+                        </select>
+                        <div class="error-message" id="opportunityError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectSelect" class="required">Project</label>
+                        <select id="projectSelect" name="project" required disabled>
+                            <option value="">Select a Project</option>
+                        </select>
+                        <div class="error-message" id="projectError"></div>
+                    </div>
+                </div>
+
+                <!-- Project Details Section -->
+                <div class="form-section" id="projectDetails" style="display: none;">
+                    <h2>Project Details</h2>
+                    
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <label>Account Executive</label>
+                            <div class="detail-value" id="aeName">-</div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <label>Project Manager</label>
+                            <div class="detail-value" id="projectManager">-</div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <label>Contract Start</label>
+                            <div class="detail-value" id="contractStart">-</div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <label>Go Live</label>
+                            <div class="detail-value" id="goLive">-</div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <label>Current ACV</label>
+                            <div class="detail-value" id="currentACV">-</div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <label>Hours Budgeted</label>
+                            <div class="detail-value" id="hoursBudgeted">-</div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <label>Hours Delivered</label>
+                            <div class="detail-value" id="hoursDelivered">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Justification Section -->
+                <div class="form-section" id="justificationSection" style="display: none;">
+                    <h2>Justification</h2>
+                    
+                    <div class="form-group">
+                        <label for="notes" class="required">Notes / Justification</label>
+                        <textarea 
+                            id="notes" 
+                            name="notes" 
+                            rows="4" 
+                            placeholder="Please provide a detailed explanation for the delayed start discount request..."
+                            required
+                        ></textarea>
+                        <div class="error-message" id="notesError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lessonsLearned" class="required">Lessons Learned</label>
+                        <textarea 
+                            id="lessonsLearned" 
+                            name="lessonsLearned" 
+                            rows="4" 
+                            placeholder="What lessons were learned from this delay that can prevent future occurrences?"
+                            required
+                        ></textarea>
+                        <div class="error-message" id="lessonsLearnedError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="delayEndDate" class="required">Delay End Date</label>
+                        <input 
+                            type="date" 
+                            id="delayEndDate" 
+                            name="delayEndDate" 
+                            required
+                        >
+                        <div class="error-message" id="delayEndDateError"></div>
+                    </div>
+                </div>
+
+                <!-- Submit Section -->
+                <div class="form-section" id="submitSection" style="display: none;">
+                    <div class="form-group">
+                        <button type="submit" id="submitBtn" class="btn btn-primary">
+                            Submit for Approval
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </main>
+
+        <!-- Thank You Page -->
+        <main class="main-content" id="thankYouPage" style="display: none;">
+            <div class="thank-you-content">
+                <div class="success-icon">✅</div>
+                <h2>Request Submitted Successfully!</h2>
+                <p>Your delayed start discount request has been submitted for approval. Please expect approval updates via email.</p>
+                <div class="gif-container">
+                    <img id="randomGif" src="" alt="Celebration GIF" class="celebration-gif">
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="resetForm()">Submit Another Request</button>
+            </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <!-- Error Banner -->
+        <div id="errorBanner" class="error-banner" style="display: none;">
+            <div class="error-content">
+                <span class="error-icon">⚠️</span>
+                <span id="errorMessage"></span>
+                <button type="button" class="error-close" onclick="hideErrorBanner()">×</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="Script.js"></script>
+</body>
+</html>
