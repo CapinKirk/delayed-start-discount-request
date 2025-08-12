@@ -219,3 +219,4 @@ docs/_build/
 # Local development
 .local/
 local/
+.vercel
