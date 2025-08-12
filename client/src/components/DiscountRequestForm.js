@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -108,46 +108,8 @@ const DiscountRequestForm = () => {
   const watchedOpportunity = watch('opportunity');
   const watchedProject = watch('project');
 
-  // Load accounts on component mount
-  useEffect(() => {
-    loadAccounts();
-  }, []);
-
-  // Load opportunities when account changes
-  useEffect(() => {
-    if (watchedAccount) {
-      loadOpportunities(watchedAccount);
-      setSelectedAccount(watchedAccount);
-      setSelectedOpportunity('');
-      setValue('opportunity', '');
-      setValue('project', '');
-      setShowProjectDetails(false);
-      setShowJustification(false);
-    }
-  }, [watchedAccount, setValue]);
-
-  // Load projects when opportunity changes
-  useEffect(() => {
-    if (watchedOpportunity) {
-      loadProjects(watchedAccount, watchedOpportunity);
-      setSelectedOpportunity(watchedOpportunity);
-      setValue('project', '');
-      setShowProjectDetails(false);
-      setShowJustification(false);
-    }
-  }, [watchedOpportunity, watchedAccount, setValue]);
-
-  // Load project details when project changes
-  useEffect(() => {
-    if (watchedProject) {
-      loadProjectDetails(watchedProject);
-      setShowProjectDetails(true);
-      setShowJustification(true);
-    }
-  }, [watchedProject]);
-
   // Load accounts from API or fallback to mock data
-  const loadAccounts = async () => {
+  const loadAccounts = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get('/api/accounts');
@@ -158,10 +120,10 @@ const DiscountRequestForm = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Load opportunities for selected account
-  const loadOpportunities = async (accountName) => {
+  const loadOpportunities = useCallback(async (accountName) => {
     try {
       setLoading(true);
       const response = await axios.get('/api/opportunities', {
@@ -174,10 +136,10 @@ const DiscountRequestForm = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Load projects for selected account and opportunity
-  const loadProjects = async (accountName, opportunityName) => {
+  const loadProjects = useCallback(async (accountName, opportunityName) => {
     try {
       setLoading(true);
       const response = await axios.get('/api/projects', {
@@ -190,10 +152,10 @@ const DiscountRequestForm = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Load project details
-  const loadProjectDetails = async (projectName) => {
+  const loadProjectDetails = useCallback(async (projectName) => {
     try {
       setLoading(true);
       const response = await axios.get(`/api/project/${encodeURIComponent(projectName)}`);
@@ -215,7 +177,45 @@ const DiscountRequestForm = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Load accounts on component mount
+  useEffect(() => {
+    loadAccounts();
+  }, [loadAccounts]);
+
+  // Load opportunities when account changes
+  useEffect(() => {
+    if (watchedAccount) {
+      loadOpportunities(watchedAccount);
+      setSelectedAccount(watchedAccount);
+      setSelectedOpportunity('');
+      setValue('opportunity', '');
+      setValue('project', '');
+      setShowProjectDetails(false);
+      setShowJustification(false);
+    }
+  }, [watchedAccount, setValue, loadOpportunities]);
+
+  // Load projects when opportunity changes
+  useEffect(() => {
+    if (watchedOpportunity) {
+      loadProjects(watchedAccount, watchedOpportunity);
+      setSelectedOpportunity(watchedOpportunity);
+      setValue('project', '');
+      setShowProjectDetails(false);
+      setShowJustification(false);
+    }
+  }, [watchedOpportunity, watchedAccount, setValue, loadProjects]);
+
+  // Load project details when project changes
+  useEffect(() => {
+    if (watchedProject) {
+      loadProjectDetails(watchedProject);
+      setShowProjectDetails(true);
+      setShowJustification(true);
+    }
+  }, [watchedProject, loadProjectDetails]);
 
   // Handle form submission
   const onSubmit = async (data) => {
