@@ -1,0 +1,124 @@
+/* ThankYouPage Component Styles */
+
+.thank-you-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.thank-you-content {
+  text-align: center;
+  padding: 2rem;
+  background: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+.success-icon {
+  font-size: 4rem;
+  margin-bottom: 1.25rem;
+  animation: bounce 0.6s ease-in-out;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.thank-you-content h2 {
+  color: var(--success-color);
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.thank-you-content p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.gif-container {
+  margin: 2rem 0;
+  padding: 1.25rem;
+  background: var(--background-color);
+  border-radius: var(--border-radius);
+}
+
+.celebration-gif {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+.action-buttons {
+  margin: 2rem 0;
+}
+
+.next-steps {
+  margin-top: 3rem;
+  text-align: left;
+  padding: 1.5rem;
+  background: var(--background-color);
+  border-radius: var(--border-radius);
+  border-left: 4px solid var(--primary-color);
+}
+
+.next-steps h3 {
+  color: var(--secondary-color);
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.next-steps ol {
+  padding-left: 1.5rem;
+  color: var(--text-primary);
+}
+
+.next-steps li {
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .thank-you-container {
+    padding: 1rem;
+  }
+  
+  .thank-you-content {
+    padding: 1.5rem;
+  }
+  
+  .thank-you-content h2 {
+    font-size: 1.75rem;
+  }
+  
+  .success-icon {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .thank-you-content h2 {
+    font-size: 1.5rem;
+  }
+  
+  .success-icon {
+    font-size: 2.5rem;
+  }
+  
+  .next-steps {
+    padding: 1rem;
+  }
+}
