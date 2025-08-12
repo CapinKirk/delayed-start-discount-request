@@ -9,10 +9,14 @@ export async function GET(req: NextRequest) {
 
   const client_id = process.env.SLACK_CLIENT_ID || "";
   const client_secret = process.env.SLACK_CLIENT_SECRET || "";
+  if (!client_secret) {
+    return NextResponse.json({ error: "missing SLACK_CLIENT_SECRET" }, { status: 500 });
+  }
   const origin = req.headers.get("x-forwarded-host")
     ? `${req.headers.get("x-forwarded-proto") || "https"}://${req.headers.get("x-forwarded-host")}`
     : new URL(req.url).origin;
-  const redirect_uri = `${process.env.NEXT_PUBLIC_BASE_URL || origin}/api/slack/oauth/callback`;
+  // Always use request origin to match Slack Allowed Redirect URL
+  const redirect_uri = `${origin}/api/slack/oauth/callback`;
 
   const resp = await fetch("https://slack.com/api/oauth.v2.access", {
     method: "POST",
