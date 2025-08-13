@@ -11,6 +11,8 @@ export async function GET(req: NextRequest) {
     greeting: theme?.greeting || 'Hi! How can we help?',
     avatar_url: theme?.avatar_url || null,
     colors: (theme?.colors as any) || { primary: '#111827' },
+    mask_roles: theme?.mask_roles ?? true,
+    unified_display_name: theme?.unified_display_name || 'Support',
   });
 }
 

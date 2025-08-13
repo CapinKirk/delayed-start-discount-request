@@ -261,7 +261,7 @@
       document.head.appendChild(s);
       await new Promise(r => s.onload = r);
     }
-    const boot = await fetch(backendOrigin + '/api/widget/bootstrap').then(r=>r.json());
+    const boot = await fetch(backendOrigin + '/api/widget/bootstrap?public_id='+encodeURIComponent(configId)).then(r=>r.json());
     const supabase = window.supabase.createClient(boot.supabaseUrl, boot.supabaseAnonKey);
     maskRoles = !!boot.mask_roles;
     unifiedDisplayName = boot.unified_display_name || 'Support';
