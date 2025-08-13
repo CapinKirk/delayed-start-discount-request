@@ -35,22 +35,22 @@ export default function SlackSettings(){
     }
   }
   return (
-    <div className="p-4 bg-white rounded shadow space-y-3">
+    <div className="p-4 bg-white rounded-lg shadow border border-gray-200 space-y-4">
       <h2 className="text-lg font-medium">Slack Settings</h2>
-      <a className="inline-block px-3 py-2 bg-black text-white rounded" href="/api/slack/oauth/start">Reconnect Slack</a>
+      <a className="inline-block px-3 py-2 bg-gray-900 hover:bg-black text-white rounded" href="/api/slack/oauth/start">Reconnect Slack</a>
       <div>
-        <label className="block mb-1">Select Channel</label>
-        <select value={selected} onFocus={reloadChannels} onChange={e=>setSelected(e.target.value)} className="border p-2 w-full">
+        <label className="block mb-1 text-sm text-gray-700">Select Channel</label>
+        <select value={selected} onFocus={reloadChannels} onChange={e=>setSelected(e.target.value)} className="border border-gray-300 rounded p-2 w-full bg-white">
           <option value="">Select…</option>
           {channels.map(c => <option key={c.id} value={c.id}>#{c.name}</option>)}
         </select>
-        <button type="button" className="mt-2 px-2 py-1 text-sm border rounded" onClick={reloadChannels}>Reload channels</button>
+        <button type="button" className="mt-2 px-3 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50" onClick={reloadChannels}>Reload channels</button>
       </div>
       <div>
-        <label className="block mb-1">Or enter Channel ID</label>
-        <input className="border p-2 w-full" placeholder="e.g. C07NV9TQR51" value={manualId} onChange={e=>setManualId(e.target.value)} />
+        <label className="block mb-1 text-sm text-gray-700">Or enter Channel ID</label>
+        <input className="border border-gray-300 rounded p-2 w-full" placeholder="e.g. C07NV9TQR51" value={manualId} onChange={e=>setManualId(e.target.value)} />
       </div>
-      <button className="px-3 py-2 bg-black text-white rounded" onClick={save}>Save</button>
+      <button className="px-3 py-2 bg-gray-900 hover:bg-black text-white rounded" onClick={save}>Save</button>
       <div className="text-sm text-gray-600">
         Interactivity URL: <code>/api/slack/interactivity</code><br/>
         Events URL: <code>/api/slack/events</code><br/>
@@ -58,8 +58,8 @@ export default function SlackSettings(){
         <div className="mt-2">Current connection: <code>{conn ? JSON.stringify(conn) : 'null'}</code></div>
       </div>
       <div>
-        <label className="block mb-1">Debug logs</label>
-        <textarea className="border p-2 w-full h-64 font-mono text-xs" readOnly value={logs} />
+        <label className="block mb-1 text-sm text-gray-700">Debug logs</label>
+        <textarea className="border border-gray-300 rounded p-2 w-full h-64 font-mono text-xs bg-gray-50" readOnly value={logs} />
       </div>
     </div>
   );
