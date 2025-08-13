@@ -32,8 +32,13 @@ export default function AIPage(){
     const session_id = crypto.randomUUID();
     const session = await fetch('/api/chat/session', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ session_id }) }).then(r=>r.json());
     await fetch('/api/chat/send', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ conversation_id: session.conversation_id, text: testInput }) });
-    const resp = await fetch('/api/ai/stream', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ conversation_id: session.conversation_id }) }).then(r=>r.json());
-    setTestOutput(resp.text||'');
+    const res = await fetch('/api/ai/stream', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ conversation_id: session.conversation_id }) });
+    const resp = await res.json();
+    if (!res.ok) {
+      alert('AI error: ' + (resp?.error || res.status));
+      console.error('[admin/ai] test error', resp);
+    }
+    setTestOutput(resp.text||resp.detail||'');
   }
   return (
     <div className="p-4 bg-white rounded shadow space-y-4">
