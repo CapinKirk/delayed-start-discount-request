@@ -18,6 +18,7 @@ export default function AIPage(){
         alert('Save failed: ' + (data?.error || res.status));
       } else {
         console.log('[admin/ai] saved', data);
+        if (data.saved_api_key) setApiKey('');
       }
     } catch (e) {
       console.error('[admin/ai] save exception', e);
