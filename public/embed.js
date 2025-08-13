@@ -96,9 +96,11 @@
   panel.appendChild(header);
 
   const messages = document.createElement('div');
-  messages.style.flex = '1';
+  messages.style.flex = '1 1 auto';
+  messages.style.display = 'flex';
+  messages.style.flexDirection = 'column';
+  messages.style.gap = '8px';
   messages.style.padding = '12px';
-  // Let messages area grow to fill remaining height
   messages.style.minHeight = '0';
   messages.style.overflowY = 'auto';
   panel.appendChild(messages);
@@ -107,6 +109,8 @@
   form.style.display = 'flex';
   form.style.gap = '8px';
   form.style.padding = '12px';
+  form.style.borderTop = '1px solid #e5e7eb';
+  form.style.flex = '0 0 auto';
   const input = document.createElement('input');
   input.type = 'text';
   input.placeholder = 'Type a message';
@@ -148,7 +152,8 @@
       avatar.src = theme.avatar_url;
       avatar.style.display = '';
       launcherImg.src = theme.avatar_url;
-      launcherImg.style.display = '';
+      launcherImg.onload = () => { launcherImg.style.display = ''; launcherIcon.style.display = 'none'; };
+      launcherImg.onerror = () => { launcherImg.style.display = 'none'; launcherIcon.style.display = ''; };
       launcherIcon.style.display = 'none';
     } else {
       avatar.style.display = 'none';
