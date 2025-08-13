@@ -14,7 +14,7 @@ export async function GET(){
     if (!tokenEnc && (globalThis as any).__SLACK_CONN_FALLBACK?.bot_token_enc) {
       tokenEnc = (globalThis as any).__SLACK_CONN_FALLBACK.bot_token_enc;
     }
-    if (!tokenEnc) return NextResponse.json({ channels: [], error: 'not_connected' });
+    if (!tokenEnc) return NextResponse.json({ channels: [], error: 'not_connected (no token in DB or preview fallback)' });
     const client = new WebClient(decryptString(tokenEnc));
     const resp = await client.conversations.list({ limit: 1000, types: 'public_channel,private_channel' });
     const channels = (resp.channels || []).map(c => ({ id: (c as any).id, name: (c as any).name }));

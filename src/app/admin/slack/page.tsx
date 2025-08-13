@@ -15,6 +15,12 @@ export default function SlackSettings(){
       .then(async r=>({ status:r.status, body: await r.text() }))
       .then(({status, body})=>{ setLogs(l=>l+`GET /api/admin/slack/connection -> ${status}\n${body}\n\n`); try{ const d=JSON.parse(body); setConn(d.connection); setSelected(d.connection?.channel_id||''); }catch{} });
   }, []);
+  async function reloadChannels(){
+    const r = await fetch('/api/admin/slack/channels');
+    const text = await r.text();
+    setLogs(l=>l+`RELOAD /api/admin/slack/channels -> ${r.status}\n${text}\n\n`);
+    try{ const d = JSON.parse(text); setChannels(d.channels||[]);}catch{}
+  }
   async function save(){
     const channel_id = selected || manualId.trim();
     if (!channel_id) { alert('Enter a Channel ID or select one.'); return; }
@@ -34,10 +40,11 @@ export default function SlackSettings(){
       <a className="inline-block px-3 py-2 bg-black text-white rounded" href="/api/slack/oauth/start">Reconnect Slack</a>
       <div>
         <label className="block mb-1">Select Channel</label>
-        <select value={selected} onChange={e=>setSelected(e.target.value)} className="border p-2 w-full">
+        <select value={selected} onFocus={reloadChannels} onChange={e=>setSelected(e.target.value)} className="border p-2 w-full">
           <option value="">Select…</option>
           {channels.map(c => <option key={c.id} value={c.id}>#{c.name}</option>)}
         </select>
+        <button type="button" className="mt-2 px-2 py-1 text-sm border rounded" onClick={reloadChannels}>Reload channels</button>
       </div>
       <div>
         <label className="block mb-1">Or enter Channel ID</label>
@@ -48,6 +55,7 @@ export default function SlackSettings(){
         Interactivity URL: <code>/api/slack/interactivity</code><br/>
         Events URL: <code>/api/slack/events</code><br/>
         Commands: <code>/claim</code>, <code>/release</code>, <code>/closechat</code>
+        <div className="mt-2">Current connection: <code>{conn ? JSON.stringify(conn) : 'null'}</code></div>
       </div>
       <div>
         <label className="block mb-1">Debug logs</label>
