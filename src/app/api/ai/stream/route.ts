@@ -35,8 +35,12 @@ export async function POST(req: NextRequest) {
 
   const content = messages.map((m) => `${m.role}: ${m.text}`).join("\n");
   const profileMerge = Object.keys(qp).some(k=>k.startsWith('utm_')) || qp.email || qp.first_name ? `\n\nUser context:\nemail=${qp.email||''}\nfirst_name=${qp.first_name||''}\nlast_name=${qp.last_name||''}\nbusiness=${qp.business||''}\nutm_source=${qp.utm_source||''}\nutm_medium=${qp.utm_medium||''}\nutm_campaign=${qp.utm_campaign||''}\nutm_term=${qp.utm_term||''}\nutm_content=${qp.utm_content||''}\nutm_id=${qp.utm_id||''}` : '';
-  const model = (aiConfig?.model && aiConfig.model.trim()) ? aiConfig.model.trim() : (process.env.DEFAULT_OPENAI_MODEL || 'gpt-4o-mini');
+  const requestedModel = (aiConfig?.model && aiConfig.model.trim()) ? aiConfig.model.trim() : '';
+  const fallbackModel = process.env.DEFAULT_OPENAI_MODEL || 'gpt-4o-mini';
+  const allowedModels = new Set(['gpt-4o', 'gpt-4o-mini', 'gpt-4.1', 'o3-mini']);
+  const model = allowedModels.has(requestedModel) ? requestedModel : fallbackModel;
   let stream: any;
+  let usedFallback = !allowedModels.has(requestedModel);
   try {
     stream = await client.chat.completions.create({
       model,
@@ -47,7 +51,24 @@ export async function POST(req: NextRequest) {
       stream: true,
     } as any);
   } catch (e: any) {
-    return NextResponse.json({ error: 'openai_error', detail: String(e?.message || e) }, { status: 502 });
+    // One retry with fallback model without streaming for better errors
+    try {
+      const resp = await client.chat.completions.create({
+        model: fallbackModel,
+        messages: [
+          { role: "system", content: (aiConfig?.system_prompt || "You are a helpful assistant.") + profileMerge },
+          { role: "user", content },
+        ],
+      } as any);
+      const finalText2 = resp.choices?.[0]?.message?.content || '';
+      if (!finalText2) throw new Error('empty_openai_response');
+      const msg = await prisma.message.create({ data: { conversation_id, role: 'ai' as any, text: finalText2 } });
+      const updated2 = await prisma.conversation.update({ where: { id: conversation_id }, data: { event_seq: { increment: 1 } } });
+      await pub.publish(conversation_id, { type: 'ai.done', payload: { message_id: msg.id, seq: (updated2.event_seq || 0), t: Date.now() } });
+      return NextResponse.json({ message_id: msg.id, text: finalText2, used_fallback: true });
+    } catch (e2: any) {
+      return NextResponse.json({ error: 'openai_error', detail: String(e2?.message || e2) }, { status: 502 });
+    }
   }
 
   let finalText = "";

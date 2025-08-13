@@ -38,7 +38,7 @@ export default function AIPage(){
       alert('AI error: ' + (resp?.error || res.status));
       console.error('[admin/ai] test error', resp);
     }
-    setTestOutput(resp.text||resp.detail||'');
+    setTestOutput(resp.text||resp.detail||JSON.stringify(resp));
   }
   return (
     <div className="p-4 bg-white rounded shadow space-y-4">
