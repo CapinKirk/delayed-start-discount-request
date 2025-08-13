@@ -1,6 +1,7 @@
 (function(){
   const script = document.currentScript;
   const configId = script?.dataset?.chatConfig || 'demo';
+  const backendOrigin = (script?.dataset?.origin) ? script.dataset.origin.replace(/\/$/, '') : (function(){ try { return new URL(script.src, window.location.href).origin; } catch { return window.location.origin; } })();
 
   const sessionKey = 'por_chat_session_id';
   let sessionId = localStorage.getItem(sessionKey);
@@ -82,7 +83,7 @@
   let autoOpen = { enabled:false, delayMs:5000, greeting:'', frequency:'once_per_session' };
 
   async function applyTheme(){
-    const res = await fetch('/api/widget/config?public_id='+encodeURIComponent(configId));
+    const res = await fetch(backendOrigin + '/api/widget/config?public_id='+encodeURIComponent(configId));
     const theme = await res.json();
     header.textContent = theme.greeting || 'Chat with us';
     header.style.background = (theme.colors && theme.colors.primary) || '#111827';
@@ -96,7 +97,7 @@
   }
 
   async function ensureConversation(){
-    const res = await fetch('/api/chat/session', { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ session_id: sessionId, config_id: configId })});
+    const res = await fetch(backendOrigin + '/api/chat/session', { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ session_id: sessionId, config_id: configId })});
     const data = await res.json();
     conversationId = data.conversation_id;
     await subscribeRealtime();
@@ -118,7 +119,7 @@
     if (panel.style.display === 'block' && !conversationId) {
       await applyTheme();
       await ensureConversation();
-      const hist = await fetch('/api/chat/history?conversation_id='+encodeURIComponent(conversationId));
+      const hist = await fetch(backendOrigin + '/api/chat/history?conversation_id='+encodeURIComponent(conversationId));
       const hdata = await hist.json();
       (hdata.messages||[]).forEach(m => addMessage(m.role, m.text));
     }
@@ -130,9 +131,9 @@
     if (!text) return;
     input.value='';
     addMessage('user', text);
-    await fetch('/api/chat/send', { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ conversation_id: conversationId, text }) });
+    await fetch(backendOrigin + '/api/chat/send', { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ conversation_id: conversationId, text }) });
     // Trigger AI on server; realtime will deliver
-    fetch('/api/ai/stream', { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ conversation_id: conversationId }) }).catch(()=>{})
+    fetch(backendOrigin + '/api/ai/stream', { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ conversation_id: conversationId }) }).catch(()=>{})
   });
 
   async function subscribeRealtime(){
@@ -142,7 +143,7 @@
       document.head.appendChild(s);
       await new Promise(r => s.onload = r);
     }
-    const boot = await fetch('/api/widget/bootstrap').then(r=>r.json());
+    const boot = await fetch(backendOrigin + '/api/widget/bootstrap').then(r=>r.json());
     const supabase = window.supabase.createClient(boot.supabaseUrl, boot.supabaseAnonKey);
     maskRoles = !!boot.mask_roles;
     unifiedDisplayName = boot.unified_display_name || 'Support';
@@ -205,7 +206,7 @@
       await subscribeRealtime();
       reconnectDelay = 500;
       // gap fill
-      const hist = await fetch('/api/chat/history?conversation_id='+encodeURIComponent(conversationId));
+      const hist = await fetch(backendOrigin + '/api/chat/history?conversation_id='+encodeURIComponent(conversationId));
       const hdata = await hist.json();
       (hdata.messages||[]).forEach(m => addMessage(m.role, m.text));
     } catch {
@@ -236,7 +237,7 @@
       document.head.appendChild(s);
       await new Promise(r => s.onload = r);
     }
-    const boot = await fetch('/api/widget/bootstrap').then(r=>r.json());
+    const boot = await fetch(backendOrigin + '/api/widget/bootstrap').then(r=>r.json());
     maskRoles = !!boot.mask_roles;
     unifiedDisplayName = boot.unified_display_name || 'Support';
     autoOpen = {
