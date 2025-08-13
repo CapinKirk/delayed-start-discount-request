@@ -27,7 +27,7 @@ export default function WidgetSettingsPage(){
   if (!theme) return <div className="p-4 bg-white rounded shadow">Loading…</div>;
 
   async function save(){
-    const payload = { public_id: publicId, ...theme };
+    const payload = { public_id: publicId, primary: theme?.colors?.primary, ...theme };
     console.log('[admin/widget] save', payload);
     const res = await fetch('/api/admin/widget-theme', { method: 'PUT', headers: { 'content-type':'application/json' }, body: JSON.stringify(payload) });
     if (!res.ok) alert('Save failed');

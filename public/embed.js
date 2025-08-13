@@ -79,11 +79,12 @@
   headerInner.style.display = 'flex';
   headerInner.style.alignItems = 'center';
   headerInner.style.gap = '8px';
+  headerInner.style.minHeight = '44px';
   const avatar = document.createElement('img');
   avatar.style.width = '40px';
   avatar.style.height = '40px';
   avatar.style.borderRadius = '8px';
-  avatar.style.objectFit = 'cover';
+  avatar.style.objectFit = 'contain';
   avatar.style.boxShadow = 'none';
   const title = document.createElement('span');
   title.textContent = 'Chat with us';

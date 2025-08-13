@@ -23,18 +23,12 @@ export default function Home() {
             </a>
           ))}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="p-4 bg-white rounded-2xl border border-gray-200 shadow-sm md:col-span-2">
-            <div className="flex items-center justify-between mb-1">
-              <div className="text-lg font-semibold">Widget is embedded on this page</div>
-              <a className="text-sm text-indigo-700 hover:underline" href="/admin/widget">Open Widget Settings →</a>
-            </div>
-            <div className="text-sm text-gray-600">Launcher shows your avatar (if set). Panel header and Send button use Primary color.</div>
+        <div className="p-4 bg-white rounded-2xl border border-gray-200 shadow-sm">
+          <div className="flex items-center justify-between mb-1">
+            <div className="text-lg font-semibold">Widget is embedded on this page</div>
+            <a className="text-sm text-indigo-700 hover:underline" href="/admin/widget">Open Widget Settings →</a>
           </div>
-          <div className="p-4 bg-white rounded-2xl border border-gray-200 shadow-sm">
-            <div className="text-sm font-medium">Diagnostics</div>
-            <textarea readOnly className="w-full h-24 text-xs font-mono border rounded p-2 bg-gray-50" value={JSON.stringify({ publicId: process.env.PUBLIC_WIDGET_CONFIG_ID || 'demo' }, null, 2)} />
-          </div>
+          <div className="text-sm text-gray-600">Use the real launcher in the corner to test. Diagnostics live on the Widget settings page.</div>
         </div>
       </div>
       <Script
