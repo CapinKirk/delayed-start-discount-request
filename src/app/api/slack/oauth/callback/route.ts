@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
     const team_id: string | undefined = data.team?.id;
     const team_name: string | undefined = data.team?.name;
 
-    // Store encrypted bot token and workspace info when DB present; otherwise skip
+    // Store encrypted bot token and workspace info when DB present; otherwise keep in-memory fallback for preview
     if (process.env.DATABASE_URL && bot_token && team_id) {
       const prisma = new PrismaClient();
       try {
@@ -69,6 +69,16 @@ export async function GET(req: NextRequest) {
       } finally {
         await prisma.$disconnect();
       }
+    } else if (bot_token && team_id) {
+      // In-memory fallback (Preview environments)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      globalThis.__SLACK_CONN_FALLBACK = {
+        team_id,
+        team_name: team_name || "",
+        channel_id: (globalThis as any).__SLACK_CONN_FALLBACK?.channel_id || "",
+        bot_token_enc: encryptString(bot_token),
+      };
     }
 
     // Redirect to admin Slack config page (absolute URL)

@@ -6,9 +6,16 @@ import { decryptString } from '@/lib/crypto';
 export async function GET(){
   try {
     const prisma = new PrismaClient();
-    const conn = await prisma.slackConnection.findFirst();
-    if (!conn) return NextResponse.json({ channels: [] });
-    const client = new WebClient(decryptString(conn.bot_token_enc));
+    let tokenEnc: string | null = null;
+    try {
+      const conn = await prisma.slackConnection.findFirst();
+      tokenEnc = conn?.bot_token_enc || null;
+    } catch {}
+    if (!tokenEnc && (globalThis as any).__SLACK_CONN_FALLBACK?.bot_token_enc) {
+      tokenEnc = (globalThis as any).__SLACK_CONN_FALLBACK.bot_token_enc;
+    }
+    if (!tokenEnc) return NextResponse.json({ channels: [], error: 'not_connected' });
+    const client = new WebClient(decryptString(tokenEnc));
     const resp = await client.conversations.list({ limit: 1000, types: 'public_channel,private_channel' });
     const channels = (resp.channels || []).map(c => ({ id: (c as any).id, name: (c as any).name }));
     return NextResponse.json({ channels });
