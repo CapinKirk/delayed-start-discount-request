@@ -1,4 +1,5 @@
 (function(){
+  try { if (window.__POR_EMBED_LOADED__) return; window.__POR_EMBED_LOADED__ = true; } catch {}
   // Try multiple ways to locate the loader script to read data- attributes
   const script = document.currentScript
     || document.getElementById('por-embed-loader')

@@ -8,7 +8,7 @@ export default function WidgetSettingsPage(){
   useEffect(() => {
     console.log('[admin/widget] load theme', { publicId });
     fetch(`/api/admin/widget-theme?public_id=${publicId}`).then(r=>r.json()).then(d=>setTheme(d.theme || {}));
-  }, []);
+  }, [publicId]);
 
   // Inject real widget into page lower-right for natural preview
   useEffect(() => {
