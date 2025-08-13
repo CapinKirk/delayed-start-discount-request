@@ -11,41 +11,48 @@
   }
 
   const launcher = document.createElement('button');
-  const launcherInner = document.createElement('span');
-  launcherInner.style.display = 'inline-flex';
-  launcherInner.style.alignItems = 'center';
-  launcherInner.style.gap = '8px';
-  const avatarSmall = document.createElement('img');
-  avatarSmall.style.width = '20px';
-  avatarSmall.style.height = '20px';
-  avatarSmall.style.borderRadius = '999px';
-  avatarSmall.style.border = '2px solid rgba(255,255,255,0.9)';
-  avatarSmall.style.background = '#fff';
-  avatarSmall.style.objectFit = 'cover';
-  const launcherLabel = document.createElement('span');
-  launcherLabel.textContent = 'Chat';
-  launcherInner.appendChild(avatarSmall);
-  launcherInner.appendChild(launcherLabel);
-  launcher.appendChild(launcherInner);
   launcher.style.position = 'fixed';
   launcher.style.bottom = '16px';
   launcher.style.right = '16px';
   launcher.style.zIndex = '2147483647';
-  launcher.style.padding = '10px 14px';
-  launcher.style.borderRadius = '999px';
-  launcher.style.background = '#111827';
-  launcher.style.color = 'white';
-  launcher.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+  launcher.style.width = '60px';
+  launcher.style.height = '60px';
+  launcher.style.borderRadius = '50%';
+  launcher.style.overflow = 'hidden';
+  launcher.style.padding = '0';
+  launcher.style.border = 'none';
+  launcher.style.background = 'transparent';
+  launcher.style.boxShadow = '0 12px 30px rgba(0,0,0,0.22)';
   launcher.style.transition = 'transform 150ms ease, box-shadow 150ms ease, opacity 200ms ease';
-  launcher.addEventListener('mouseenter',()=>{ launcher.style.transform='translateY(-2px)'; launcher.style.boxShadow='0 12px 28px rgba(0,0,0,0.2)'; });
-  launcher.addEventListener('mouseleave',()=>{ launcher.style.transform=''; launcher.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)'; });
-  // subtle attention pulse
-  launcher.animate([
-    { transform:'scale(1)', opacity:1 },
-    { transform:'scale(1.05)', opacity:0.96 },
-    { transform:'scale(1)', opacity:1 }
-  ], { duration: 1500, iterations: 1, delay: 2000 });
+  const launcherImg = document.createElement('img');
+  launcherImg.style.width = '100%';
+  launcherImg.style.height = '100%';
+  launcherImg.style.objectFit = 'cover';
+  launcherImg.style.display = 'none';
+  const launcherIcon = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  launcherIcon.setAttribute('viewBox','0 0 24 24');
+  launcherIcon.style.width = '60px';
+  launcherIcon.style.height = '60px';
+  launcherIcon.style.background = '#111827';
+  launcherIcon.style.fill = 'white';
+  launcherIcon.innerHTML = '<path d="M2 5a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H9.4l-4.2 3.15A1 1 0 0 1 3 19.4V14.5A3 3 0 0 1 2 14V5z"/>';
+  launcher.appendChild(launcherImg);
+  launcher.appendChild(launcherIcon);
+  launcher.addEventListener('mouseenter',()=>{ launcher.style.transform='translateY(-2px)'; launcher.style.boxShadow='0 16px 36px rgba(0,0,0,0.28)'; });
+  launcher.addEventListener('mouseleave',()=>{ launcher.style.transform=''; launcher.style.boxShadow='0 12px 30px rgba(0,0,0,0.22)'; });
+  // pulse ring
+  const ring = document.createElement('div');
+  ring.style.position = 'fixed';
+  ring.style.bottom = '16px';
+  ring.style.right = '16px';
+  ring.style.width = '60px';
+  ring.style.height = '60px';
+  ring.style.borderRadius = '50%';
+  ring.style.pointerEvents = 'none';
+  ring.style.boxShadow = '0 0 0 8px rgba(17,24,39,0.15)';
+  ring.style.transition = 'box-shadow 600ms ease';
   document.body.appendChild(launcher);
+  document.body.appendChild(ring);
 
   const panel = document.createElement('div');
   panel.style.position = 'fixed';
@@ -67,12 +74,11 @@
   headerInner.style.alignItems = 'center';
   headerInner.style.gap = '8px';
   const avatar = document.createElement('img');
-  avatar.style.width = '32px';
-  avatar.style.height = '32px';
+  avatar.style.width = '40px';
+  avatar.style.height = '40px';
   avatar.style.borderRadius = '999px';
-  avatar.style.border = '2px solid rgba(255,255,255,0.9)';
-  avatar.style.background = '#fff';
   avatar.style.objectFit = 'cover';
+  avatar.style.boxShadow = '0 4px 12px rgba(0,0,0,0.18)';
   const title = document.createElement('span');
   title.textContent = 'Chat with us';
   headerInner.appendChild(avatar);
@@ -128,16 +134,18 @@
     title.textContent = theme.greeting || 'Chat with us';
     const primary = (theme.colors && theme.colors.primary) || '#111827';
     header.style.background = primary;
-    launcher.style.background = primary;
     if (theme.avatar_url) {
       avatar.src = theme.avatar_url;
       avatar.style.display = '';
-      avatarSmall.src = theme.avatar_url;
-      avatarSmall.style.display = '';
+      launcherImg.src = theme.avatar_url;
+      launcherImg.style.display = '';
+      launcherIcon.style.display = 'none';
     } else {
       avatar.style.display = 'none';
-      avatarSmall.style.display = 'none';
+      launcherIcon.style.display = '';
+      launcherImg.style.display = 'none';
     }
+    ring.style.boxShadow = `0 0 0 8px ${hexToRgba(primary,0.15)}`;
     if (theme.position === 'bottom-left') {
       launcher.style.left = '16px';
       launcher.style.right = '';
@@ -169,34 +177,47 @@
     bubble.style.padding = '8px 12px';
     bubble.style.borderRadius = '18px';
     bubble.style.lineHeight = '1.4';
+    bubble.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+    bubble.style.transition = 'transform 120ms ease, opacity 120ms ease';
+    bubble.style.transform = 'translateY(4px)';
+    bubble.style.opacity = '0';
     const isUser = role === 'user';
     if (isUser) {
       row.style.justifyContent = 'flex-end';
-      bubble.style.background = '#0b93f6';
+      bubble.style.background = 'linear-gradient(180deg, #0b93f6, #007aff)';
       bubble.style.color = 'white';
       bubble.style.borderBottomRightRadius = '4px';
     } else {
       const img = document.createElement('img');
       img.src = avatar.src || '';
-      img.style.width = '26px';
-      img.style.height = '26px';
+      img.style.width = '32px';
+      img.style.height = '32px';
       img.style.borderRadius = '999px';
-      img.style.border = '2px solid rgba(255,255,255,0.9)';
       img.style.objectFit = 'cover';
       img.style.marginRight = '8px';
+      img.style.boxShadow = '0 4px 12px rgba(0,0,0,0.18)';
       row.appendChild(img);
-      bubble.style.background = '#e9e9eb';
+      bubble.style.background = '#f2f2f7';
       bubble.style.color = '#111827';
       bubble.style.borderBottomLeftRadius = '4px';
     }
     row.appendChild(bubble);
     messages.appendChild(row);
     messages.scrollTop = messages.scrollHeight;
-    try { new Audio('https://assets.mixkit.co/active_storage/sfx/2005/2005-preview.mp3').play().catch(()=>{}); } catch {}
+    // animate in
+    requestAnimationFrame(()=>{ bubble.style.transform = 'translateY(0)'; bubble.style.opacity = '1'; });
+    try {
+      const url = isUser ? 'https://assets.mixkit.co/active_storage/sfx/2576/2576-preview.mp3' : 'https://assets.mixkit.co/active_storage/sfx/2005/2005-preview.mp3';
+      new Audio(url).play().catch(()=>{});
+    } catch {}
   }
 
   launcher.addEventListener('click', async () => {
     panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    panel.animate([
+      { transform:'scale(0.98)', opacity:0.98 },
+      { transform:'scale(1)', opacity:1 }
+    ], { duration: 150, iterations: 1 });
     if (panel.style.display === 'block' && !conversationId) {
       await applyTheme();
       await ensureConversation();
@@ -354,6 +375,12 @@
   }
 
   scheduleAutoOpen();
+  function hexToRgba(hex, alpha){
+    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (!m) return 'rgba(17,24,39,'+alpha+')';
+    const r = parseInt(m[1],16), g=parseInt(m[2],16), b=parseInt(m[3],16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
 })();
 
 
