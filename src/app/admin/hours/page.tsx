@@ -5,6 +5,10 @@ type Row = { tz: string; weekday: number; start_local_time: string; end_local_ti
 
 export default function HoursPage(){
   const [rows, setRows] = useState<Row[]>([]);
+  const weekdays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const tzOptions = [
+    'UTC','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','Europe/London','Europe/Berlin','Asia/Tokyo','Asia/Singapore','Australia/Sydney'
+  ];
   useEffect(() => { fetch('/api/admin/hours').then(r=>r.json()).then(d=> setRows(d.hours || [])); }, []);
 
   function update(i: number, field: keyof Row, value: string){
@@ -18,21 +22,31 @@ export default function HoursPage(){
   return (
     <div className="p-4 bg-white rounded shadow space-y-4">
       <h2 className="text-lg font-medium">Business Hours</h2>
-      <button className="px-3 py-2 bg-black text-white rounded" onClick={add}>Add Row</button>
+      <p className="text-sm text-gray-600">Add one or more rows; a time is considered in-hours if it matches any row, in its timezone.</p>
+      <button className="px-3 py-2 bg-indigo-600 text-white rounded" onClick={add}>Add Row</button>
       <table className="w-full text-sm">
-        <thead><tr><th className="text-left">TZ</th><th className="text-left">Weekday (0-6)</th><th className="text-left">Start</th><th className="text-left">End</th></tr></thead>
+        <thead><tr><th className="text-left">Timezone</th><th className="text-left">Weekday</th><th className="text-left">Start</th><th className="text-left">End</th></tr></thead>
         <tbody>
           {rows.map((r, i) => (
             <tr key={i}>
-              <td><input className="border p-1" value={r.tz} onChange={e=>update(i,'tz',e.target.value)} /></td>
-              <td><input className="border p-1 w-16" type="number" min={0} max={6} value={r.weekday} onChange={e=>update(i,'weekday',e.target.value)} /></td>
-              <td><input className="border p-1" value={r.start_local_time} onChange={e=>update(i,'start_local_time',e.target.value)} /></td>
-              <td><input className="border p-1" value={r.end_local_time} onChange={e=>update(i,'end_local_time',e.target.value)} /></td>
+              <td>
+                <input list="tz-list" className="border p-1 w-full" value={r.tz} onChange={e=>update(i,'tz',e.target.value)} title="IANA timezone, e.g., America/Chicago" />
+                <datalist id="tz-list">
+                  {tzOptions.map(z=> <option value={z} key={z} />)}
+                </datalist>
+              </td>
+              <td>
+                <select className="border p-1" value={r.weekday} onChange={e=>update(i,'weekday',e.target.value)}>
+                  {weekdays.map((w, idx)=> <option key={idx} value={idx}>{w}</option>)}
+                </select>
+              </td>
+              <td><input className="border p-1" type="time" value={r.start_local_time} onChange={e=>update(i,'start_local_time',e.target.value)} /></td>
+              <td><input className="border p-1" type="time" value={r.end_local_time} onChange={e=>update(i,'end_local_time',e.target.value)} /></td>
             </tr>
           ))}
         </tbody>
       </table>
-      <button className="px-3 py-2 bg-black text-white rounded" onClick={save}>Save</button>
+      <button className="px-3 py-2 bg-indigo-600 text-white rounded" onClick={save}>Save</button>
     </div>
   );
 }

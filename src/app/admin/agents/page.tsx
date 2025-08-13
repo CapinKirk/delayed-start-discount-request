@@ -7,13 +7,14 @@ export default function AgentsPage(){
   const [agents, setAgents] = useState<Agent[]>([]);
   const [newUser, setNewUser] = useState('');
   const [newName, setNewName] = useState('');
+  const [directory, setDirectory] = useState<{id:string;name:string}[]>([]);
 
   async function load(){
     const res = await fetch('/api/admin/agents');
     const data = await res.json();
     setAgents(data.agents || []);
   }
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); fetch('/api/admin/slack/users').then(r=>r.json()).then(d=> setDirectory(d.users||[])); }, []);
 
   async function add(){
     const res = await fetch('/api/admin/agents', { method: 'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ slack_user_id: newUser, display_name: newName, order_index: agents.length, active: true }) });
@@ -37,10 +38,21 @@ export default function AgentsPage(){
   return (
     <div className="p-4 bg-white rounded shadow space-y-4">
       <h2 className="text-lg font-medium">Agents (max 4)</h2>
-      <div className="flex gap-2">
-        <input className="border p-2 flex-1" placeholder="Slack user ID (e.g., U123)" value={newUser} onChange={e=>setNewUser(e.target.value)} />
-        <input className="border p-2 flex-1" placeholder="Display name" value={newName} onChange={e=>setNewName(e.target.value)} />
-        <button className="px-3 py-2 bg-black text-white rounded" onClick={add} disabled={!newUser || !newName || agents.length>=4}>Add</button>
+      <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Select Slack user</label>
+            <select className="border p-2 w-full" value={newUser} onChange={e=>{ setNewUser(e.target.value); const n = directory.find(u=>u.id===e.target.value)?.name||''; setNewName(n); }}>
+              <option value="">Choose…</option>
+              {directory.map(u=> <option key={u.id} value={u.id}>{u.name} ({u.id})</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Display name</label>
+            <input className="border p-2 w-full" placeholder="Display name" value={newName} onChange={e=>setNewName(e.target.value)} />
+          </div>
+        </div>
+        <button className="px-3 py-2 bg-indigo-600 text-white rounded-md" onClick={add} disabled={!newUser || !newName || agents.length>=4}>Add</button>
       </div>
       <ul className="space-y-2">
         {agents.map((a, i) => (

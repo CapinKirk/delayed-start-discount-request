@@ -9,6 +9,8 @@ import { RealtimePublisher } from "@/lib/realtime";
 const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
+  const url = new URL(req.url);
+  const qp = Object.fromEntries(url.searchParams.entries());
   const { session_id } = await req.json().catch(() => ({ session_id: "" }));
   if (!session_id) return NextResponse.json({ error: "missing session_id" }, { status: 400 });
 
@@ -19,7 +21,19 @@ export async function POST(req: NextRequest) {
     // create parent message & thread
     let thread_ts: string | undefined = undefined;
     if (slack?.channel_id) {
-      const parent = await postParentMessageReturnThreadTs(`New chat from website visitor`);
+      const lines = [
+        `New chat from website visitor`,
+        qp.email ? `email: ${qp.email}` : '',
+        qp.first_name || qp.last_name ? `name: ${(qp.first_name||'')} ${(qp.last_name||'')}`.trim() : '',
+        qp.business ? `business: ${qp.business}` : '',
+        qp.utm_source ? `utm_source: ${qp.utm_source}` : '',
+        qp.utm_medium ? `utm_medium: ${qp.utm_medium}` : '',
+        qp.utm_campaign ? `utm_campaign: ${qp.utm_campaign}` : '',
+        qp.utm_term ? `utm_term: ${qp.utm_term}` : '',
+        qp.utm_content ? `utm_content: ${qp.utm_content}` : '',
+        qp.utm_id ? `utm_id: ${qp.utm_id}` : '',
+      ].filter(Boolean).join('\n');
+      const parent = await postParentMessageReturnThreadTs(lines);
       thread_ts = parent?.thread_ts;
     }
     convo = await prisma.conversation.create({

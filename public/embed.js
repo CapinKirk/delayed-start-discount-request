@@ -67,8 +67,8 @@
   headerInner.style.alignItems = 'center';
   headerInner.style.gap = '8px';
   const avatar = document.createElement('img');
-  avatar.style.width = '20px';
-  avatar.style.height = '20px';
+  avatar.style.width = '32px';
+  avatar.style.height = '32px';
   avatar.style.borderRadius = '999px';
   avatar.style.border = '2px solid rgba(255,255,255,0.9)';
   avatar.style.background = '#fff';
@@ -86,7 +86,7 @@
   const messages = document.createElement('div');
   messages.style.flex = '1';
   messages.style.padding = '12px';
-  messages.style.height = '380px';
+  messages.style.height = '460px';
   messages.style.overflowY = 'auto';
   panel.appendChild(messages);
 
@@ -146,8 +146,11 @@
     }
   }
 
+  function currentQuery(){
+    return window.location.search || '';
+  }
   async function ensureConversation(){
-    const res = await fetch(backendOrigin + '/api/chat/session', { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ session_id: sessionId, config_id: configId })});
+    const res = await fetch(backendOrigin + '/api/chat/session'+currentQuery(), { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ session_id: sessionId, config_id: configId })});
     const data = await res.json();
     conversationId = data.conversation_id;
     await subscribeRealtime();
@@ -156,12 +159,40 @@
   let lastSeq = 0;
   let lastServerT = 0;
   function addMessage(role, text){
-    const div = document.createElement('div');
-    const name = role === 'user' ? 'You' : (maskRoles ? unifiedDisplayName : (role === 'agent' ? 'Support' : 'Assistant'));
-    div.textContent = name + ': ' + text;
-    div.style.margin = '6px 0';
-    messages.appendChild(div);
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.margin = '6px 0';
+    row.style.alignItems = 'flex-end';
+    const bubble = document.createElement('div');
+    bubble.textContent = text;
+    bubble.style.maxWidth = '75%';
+    bubble.style.padding = '8px 12px';
+    bubble.style.borderRadius = '18px';
+    bubble.style.lineHeight = '1.4';
+    const isUser = role === 'user';
+    if (isUser) {
+      row.style.justifyContent = 'flex-end';
+      bubble.style.background = '#0b93f6';
+      bubble.style.color = 'white';
+      bubble.style.borderBottomRightRadius = '4px';
+    } else {
+      const img = document.createElement('img');
+      img.src = avatar.src || '';
+      img.style.width = '26px';
+      img.style.height = '26px';
+      img.style.borderRadius = '999px';
+      img.style.border = '2px solid rgba(255,255,255,0.9)';
+      img.style.objectFit = 'cover';
+      img.style.marginRight = '8px';
+      row.appendChild(img);
+      bubble.style.background = '#e9e9eb';
+      bubble.style.color = '#111827';
+      bubble.style.borderBottomLeftRadius = '4px';
+    }
+    row.appendChild(bubble);
+    messages.appendChild(row);
     messages.scrollTop = messages.scrollHeight;
+    try { new Audio('https://assets.mixkit.co/active_storage/sfx/2005/2005-preview.mp3').play().catch(()=>{}); } catch {}
   }
 
   launcher.addEventListener('click', async () => {
@@ -183,7 +214,7 @@
     addMessage('user', text);
     await fetch(backendOrigin + '/api/chat/send', { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ conversation_id: conversationId, text }) });
     // Trigger AI on server; realtime will deliver
-    fetch(backendOrigin + '/api/ai/stream', { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ conversation_id: conversationId }) }).catch(()=>{})
+    fetch(backendOrigin + '/api/ai/stream'+currentQuery(), { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ conversation_id: conversationId }) }).catch(()=>{})
   });
 
   async function subscribeRealtime(){

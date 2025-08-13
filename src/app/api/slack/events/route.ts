@@ -86,18 +86,18 @@ export async function POST(req: NextRequest) {
           await postOrUpdateController(ev.thread_ts, { routing_state: 'agent_active', owner_slack_user_id: ev.user });
         }
       } else if (ev && ev.type === 'reaction_added') {
-        // Optional reaction claim (on parent message)
+        // Any reaction claims if unassigned; enforce 1-minute response then fallback to AI/next agent via cron
         const conn = await prisma.slackConnection.findFirst();
         const emoji = conn?.reaction_claim_emoji || '✅';
-        if (ev.reaction === emoji) {
+        if (ev.reaction === emoji || true) {
           const channel = ev.item?.channel;
           const ts = ev.item?.ts;
           if (channel && ts) {
             const convo = await prisma.conversation.findFirst({ where: { slack_thread_ts: ts } });
             if (convo) {
-              const res = await prisma.conversation.updateMany({ where: { id: convo.id, assigned_agent_id: null }, data: { assigned_agent_id: ev.user, assigned_at: new Date(), routing_state: 'agent_active' as any } });
+              const res = await prisma.conversation.updateMany({ where: { id: convo.id, assigned_agent_id: null }, data: { assigned_agent_id: ev.user, assigned_at: new Date(), routing_state: 'pending_agent' as any } });
               if (res.count > 0) {
-                await postOrUpdateController(ts, { routing_state: 'agent_active', owner_slack_user_id: ev.user });
+                await postOrUpdateController(ts, { routing_state: 'pending_agent', owner_slack_user_id: ev.user });
               }
             }
           }
