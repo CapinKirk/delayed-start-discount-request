@@ -10,8 +10,19 @@ export default function AIPage(){
   const [testOutput, setTestOutput] = useState('');
   useEffect(()=>{ fetch('/api/admin/ai-config').then(r=>r.json()).then(d=>{ if (d.ai){ setModel(d.ai.model||'gpt-5'); setPrompt(d.ai.system_prompt||''); setKb(d.ai.kb_text||''); } }); },[]);
   async function save(){
-    const res = await fetch('/api/admin/ai-config', { method: 'PUT', headers: {'content-type':'application/json'}, body: JSON.stringify({ model, system_prompt: prompt, kb_text: kb, api_key: apiKey || undefined }) });
-    if (!res.ok) alert('Save failed');
+    try {
+      const res = await fetch('/api/admin/ai-config', { method: 'PUT', headers: {'content-type':'application/json'}, body: JSON.stringify({ model, system_prompt: prompt, kb_text: kb, api_key: apiKey || undefined }) });
+      const data = await res.json().catch(()=>({}));
+      if (!res.ok) {
+        console.error('[admin/ai] save error', data);
+        alert('Save failed: ' + (data?.error || res.status));
+      } else {
+        console.log('[admin/ai] saved', data);
+      }
+    } catch (e) {
+      console.error('[admin/ai] save exception', e);
+      alert('Save failed');
+    }
   }
   async function test(){
     setTestOutput('');
@@ -44,6 +55,10 @@ export default function AIPage(){
         <input className="border p-2 w-full" placeholder="Ask a question" value={testInput} onChange={e=>setTestInput(e.target.value)} />
         <button className="px-3 py-2 bg-black text-white rounded" onClick={test}>Run</button>
         {testOutput && <pre className="text-sm bg-gray-100 p-2 rounded whitespace-pre-wrap">{testOutput}</pre>}
+      </div>
+      <div className="p-3 bg-white border border-gray-200 rounded-xl">
+        <div className="text-sm font-medium mb-1">Diagnostics</div>
+        <textarea readOnly className="w-full h-28 text-xs font-mono border rounded p-2 bg-gray-50" value={JSON.stringify({ model, prompt, kb_length: kb.length, apiKeyProvided: !!apiKey }, null, 2)} />
       </div>
     </div>
   );

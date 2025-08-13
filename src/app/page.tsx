@@ -41,7 +41,7 @@ export default function Home() {
         id="por-embed-loader"
         src="/embed.js"
         strategy="afterInteractive"
-        data-chat-config={process.env.PUBLIC_WIDGET_CONFIG_ID || 'demo'}
+        data-chat-config={process.env.NEXT_PUBLIC_WIDGET_PUBLIC_ID || process.env.PUBLIC_WIDGET_CONFIG_ID || 'demo'}
         data-origin=""
         data-autopop="true"
         data-autopop-delay-ms="2000"

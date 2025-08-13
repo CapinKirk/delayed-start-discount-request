@@ -5,9 +5,9 @@ import { encryptString } from '@/lib/crypto';
 
 const prisma = new PrismaClient();
 const Schema = z.object({
-  model: z.string().min(1),
-  system_prompt: z.string().min(1),
-  kb_text: z.string().optional(),
+  model: z.string().default('gpt-5'),
+  system_prompt: z.string().optional().default(''),
+  kb_text: z.string().optional().default(''),
   api_key: z.string().optional(), // plaintext from client; stored encrypted
 });
 
@@ -21,7 +21,7 @@ export async function PUT(req: NextRequest){
   const json = await req.json();
   const parsed = Schema.safeParse(json);
   if (!parsed.success) return NextResponse.json({ error: parsed.error.message }, { status: 400 });
-  const toUpdate: any = { model: parsed.data.model, system_prompt: parsed.data.system_prompt, kb_text: parsed.data.kb_text || '' };
+  const toUpdate: any = { model: parsed.data.model || 'gpt-5', system_prompt: parsed.data.system_prompt || '', kb_text: parsed.data.kb_text || '' };
   if (parsed.data.api_key && parsed.data.api_key.trim()) {
     toUpdate.api_key_enc = encryptString(parsed.data.api_key.trim());
     // In-memory fallback for environments where DB schema might lag
