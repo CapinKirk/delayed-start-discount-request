@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { PrismaClient } from '@/generated/prisma';
 import { z } from 'zod';
 
+export const runtime = 'nodejs';
 const prisma = new PrismaClient();
 const Schema = z.object({ channel_id: z.string().min(1) });
 
@@ -34,9 +35,9 @@ export async function PUT(req: NextRequest){
   } catch {
     // Fallback save in memory for Preview without DB
     globalThis.__SLACK_CONN_FALLBACK = { team_id: 'preview', team_name: 'Preview', channel_id: parsed.data.channel_id };
-    const cookieStore = cookies();
-    cookieStore.set('slack_conn', JSON.stringify(globalThis.__SLACK_CONN_FALLBACK), { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 60*60*24*7 });
-    return NextResponse.json({ connection: globalThis.__SLACK_CONN_FALLBACK });
+    const res = NextResponse.json({ connection: globalThis.__SLACK_CONN_FALLBACK });
+    res.cookies.set('slack_conn', JSON.stringify(globalThis.__SLACK_CONN_FALLBACK), { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 60*60*24*7 });
+    return res;
   }
 }
 

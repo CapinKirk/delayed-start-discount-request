@@ -4,6 +4,7 @@ import { WebClient } from '@slack/web-api';
 import { PrismaClient } from '@/generated/prisma';
 import { decryptString } from '@/lib/crypto';
 
+export const runtime = 'nodejs';
 export async function GET(){
   try {
     const prisma = new PrismaClient();
