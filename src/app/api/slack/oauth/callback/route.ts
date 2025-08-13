@@ -81,9 +81,11 @@ export async function GET(req: NextRequest) {
         bot_token_enc: encryptString(bot_token),
       };
       // Persist preview token and connection in secure cookie so further API calls can read it
-      const cookieStore = cookies();
-      cookieStore.set('slack_token_enc', (globalThis as any).__SLACK_CONN_FALLBACK.bot_token_enc, { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 60*60*24*7 });
-      cookieStore.set('slack_conn', JSON.stringify({ team_id, team_name, channel_id: (globalThis as any).__SLACK_CONN_FALLBACK.channel_id }), { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 60*60*24*7 });
+      // Redirect response with cookies attached (must set cookies on the response object)
+      const redirect = NextResponse.redirect(`${origin}/admin/slack?installed=1`);
+      redirect.cookies.set('slack_token_enc', (globalThis as any).__SLACK_CONN_FALLBACK.bot_token_enc, { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 60*60*24*7 });
+      redirect.cookies.set('slack_conn', JSON.stringify({ team_id, team_name, channel_id: (globalThis as any).__SLACK_CONN_FALLBACK.channel_id }), { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 60*60*24*7 });
+      return redirect;
     }
 
     // Redirect to admin Slack config page (absolute URL)
