@@ -37,7 +37,19 @@
   panel.style.zIndex = '2147483647';
 
   const header = document.createElement('div');
-  header.textContent = 'Chat with us';
+  const headerInner = document.createElement('div');
+  headerInner.style.display = 'flex';
+  headerInner.style.alignItems = 'center';
+  headerInner.style.gap = '8px';
+  const avatar = document.createElement('img');
+  avatar.style.width = '20px';
+  avatar.style.height = '20px';
+  avatar.style.borderRadius = '999px';
+  const title = document.createElement('span');
+  title.textContent = 'Chat with us';
+  headerInner.appendChild(avatar);
+  headerInner.appendChild(title);
+  header.appendChild(headerInner);
   header.style.padding = '12px';
   header.style.background = '#111827';
   header.style.color = 'white';
@@ -85,9 +97,15 @@
   async function applyTheme(){
     const res = await fetch(backendOrigin + '/api/widget/config?public_id='+encodeURIComponent(configId));
     const theme = await res.json();
-    header.textContent = theme.greeting || 'Chat with us';
+    title.textContent = theme.greeting || 'Chat with us';
     header.style.background = (theme.colors && theme.colors.primary) || '#111827';
     launcher.style.background = (theme.colors && theme.colors.primary) || '#111827';
+    if (theme.avatar_url) {
+      avatar.src = theme.avatar_url;
+      avatar.style.display = '';
+    } else {
+      avatar.style.display = 'none';
+    }
     if (theme.position === 'bottom-left') {
       launcher.style.left = '16px';
       launcher.style.right = '';

@@ -19,8 +19,8 @@ export default function WidgetSettingsPage(){
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="p-4 bg-white rounded shadow space-y-4">
-        <h2 className="text-lg font-medium">Widget Settings</h2>
+      <div className="p-4 bg-white rounded-xl shadow-sm border border-gray-200 space-y-4">
+        <h2 className="text-lg font-semibold tracking-tight">Widget Settings</h2>
         <label className="block">Mask roles
           <input type="checkbox" className="ml-2" checked={!!theme.mask_roles} onChange={e=>setTheme({...theme, mask_roles: e.target.checked})} />
         </label>
@@ -48,10 +48,10 @@ export default function WidgetSettingsPage(){
         <label className="block">Avatar URL
           <input className="border p-2 w-full" placeholder="https://..." value={theme.avatar_url || ''} onChange={e=>setTheme({...theme, avatar_url: e.target.value})} />
         </label>
-        <button className="px-3 py-2 bg-black text-white rounded" onClick={save}>Save</button>
+        <button className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-md transition" onClick={save}>Save</button>
       </div>
-      <div className="p-4 bg-white rounded shadow">
-        <h2 className="text-lg font-medium mb-2">Live Preview</h2>
+      <div className="p-4 bg-white rounded-xl shadow-sm border border-gray-200">
+        <h2 className="text-lg font-semibold tracking-tight mb-2">Live Preview</h2>
         <iframe srcDoc={`<!doctype html><html><body><script src="/embed.js" data-chat-config="${publicId}" data-origin="${location.origin}" async></script></body></html>`} className="w-full h-[520px] border rounded" />
       </div>
     </div>
