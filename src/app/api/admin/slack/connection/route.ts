@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { PrismaClient } from '@/generated/prisma';
 import { z } from 'zod';
 
@@ -10,11 +11,15 @@ declare global { var __SLACK_CONN_FALLBACK: { team_id: string; team_name: string
 export async function GET(){
   try {
     const c = await prisma.slackConnection.findFirst();
-    return NextResponse.json({ connection: c ? { team_id: c.team_id, team_name: c.team_name, channel_id: c.channel_id } : null });
-  } catch {
-    // Fallback when database is unavailable (Preview)
-    return NextResponse.json({ connection: globalThis.__SLACK_CONN_FALLBACK || null });
+    if (c) return NextResponse.json({ connection: { team_id: c.team_id, team_name: c.team_name, channel_id: c.channel_id } });
+  } catch {}
+  // Fallback when database is unavailable (Preview)
+  const cookieStore = cookies();
+  const fromCookie = cookieStore.get('slack_conn')?.value;
+  if (fromCookie) {
+    try { return NextResponse.json({ connection: JSON.parse(fromCookie) }); } catch {}
   }
+  return NextResponse.json({ connection: (globalThis as any).__SLACK_CONN_FALLBACK || null });
 }
 
 export async function PUT(req: NextRequest){
@@ -29,6 +34,8 @@ export async function PUT(req: NextRequest){
   } catch {
     // Fallback save in memory for Preview without DB
     globalThis.__SLACK_CONN_FALLBACK = { team_id: 'preview', team_name: 'Preview', channel_id: parsed.data.channel_id };
+    const cookieStore = cookies();
+    cookieStore.set('slack_conn', JSON.stringify(globalThis.__SLACK_CONN_FALLBACK), { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 60*60*24*7 });
     return NextResponse.json({ connection: globalThis.__SLACK_CONN_FALLBACK });
   }
 }

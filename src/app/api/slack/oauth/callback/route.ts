@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from 'next/headers';
 export const runtime = "nodejs";
 import { WebClient } from "@slack/web-api";
 import { PrismaClient } from "@/generated/prisma";
@@ -79,6 +80,10 @@ export async function GET(req: NextRequest) {
         channel_id: (globalThis as any).__SLACK_CONN_FALLBACK?.channel_id || "",
         bot_token_enc: encryptString(bot_token),
       };
+      // Persist preview token and connection in secure cookie so further API calls can read it
+      const cookieStore = cookies();
+      cookieStore.set('slack_token_enc', (globalThis as any).__SLACK_CONN_FALLBACK.bot_token_enc, { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 60*60*24*7 });
+      cookieStore.set('slack_conn', JSON.stringify({ team_id, team_name, channel_id: (globalThis as any).__SLACK_CONN_FALLBACK.channel_id }), { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 60*60*24*7 });
     }
 
     // Redirect to admin Slack config page (absolute URL)
