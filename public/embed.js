@@ -234,12 +234,22 @@
       { transform:'scale(0.98)', opacity:0.98 },
       { transform:'scale(1)', opacity:1 }
     ], { duration: 150, iterations: 1 });
-    if (panel.style.display === 'block' && !conversationId) {
+    if (panel.style.display === 'flex' && !conversationId) {
       await applyTheme();
       await ensureConversation();
-      const hist = await fetch(backendOrigin + '/api/chat/history?conversation_id='+encodeURIComponent(conversationId));
-      const hdata = await hist.json();
-      (hdata.messages||[]).forEach(m => addMessage(m.role, m.text));
+      try {
+        const hist = await fetch(backendOrigin + '/api/chat/history?conversation_id='+encodeURIComponent(conversationId));
+        const hdata = await hist.json();
+        (hdata.messages||[]).forEach(m => addMessage(m.role, m.text));
+      } catch {}
+      try {
+        const cfg = await fetch(backendOrigin + '/api/widget/config?public_id='+encodeURIComponent(configId)).then(r=>r.json());
+        if (cfg.greeting) {
+          addMessage('agent', cfg.greeting);
+          await fetch(backendOrigin + '/api/chat/send', { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ conversation_id: conversationId, text: cfg.greeting }) });
+          await fetch(backendOrigin + '/api/ai/stream'+currentQuery(), { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ conversation_id: conversationId }) });
+        }
+      } catch {}
     }
   });
 
