@@ -42,11 +42,16 @@ export default function WidgetSettingsPage(){
             <option value="every_visit">Every visit</option>
           </select>
         </label>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block">Primary color
+            <input className="border p-2 w-full" type="color" value={(theme.colors?.primary) || '#111827'} onChange={e=>setTheme({...theme, colors:{ ...(theme.colors||{}), primary: e.target.value }})} />
+          </label>
+          <label className="block">Avatar URL
+            <input className="border p-2 w-full" placeholder="https://..." value={theme.avatar_url || ''} onChange={e=>setTheme({...theme, avatar_url: e.target.value})} />
+          </label>
+        </div>
         <label className="block">Greeting
           <input className="border p-2 w-full" value={theme.greeting || ''} onChange={e=>setTheme({...theme, greeting: e.target.value})} />
-        </label>
-        <label className="block">Avatar URL
-          <input className="border p-2 w-full" placeholder="https://..." value={theme.avatar_url || ''} onChange={e=>setTheme({...theme, avatar_url: e.target.value})} />
         </label>
         <button className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-md transition" onClick={save}>Save</button>
       </div>

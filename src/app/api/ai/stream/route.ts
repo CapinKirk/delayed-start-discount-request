@@ -20,7 +20,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ suppressed: true });
   }
 
-  const configuredKey = aiConfig?.api_key_enc ? decryptString(aiConfig.api_key_enc) : undefined;
+  let configuredKey = aiConfig?.api_key_enc ? decryptString(aiConfig.api_key_enc) : undefined;
+  if (!configuredKey && (globalThis as any).__AI_KEY_FALLBACK) {
+    try { configuredKey = decryptString((globalThis as any).__AI_KEY_FALLBACK); } catch {}
+  }
   const apiKey = configuredKey || process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: "missing_openai_api_key" }, { status: 400 });

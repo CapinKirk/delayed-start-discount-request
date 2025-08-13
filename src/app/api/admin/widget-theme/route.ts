@@ -17,6 +17,7 @@ const ThemeSchema = z.object({
   auto_open_delay_ms: z.coerce.number().int().min(0).max(600000).default(5000),
   auto_open_greeting: z.string().optional().default(''),
   auto_open_frequency: z.enum(['once_per_session', 'every_visit']).default('once_per_session'),
+  primary: z.string().regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/).optional(),
 });
 
 export async function GET(req: NextRequest) {
@@ -42,11 +43,12 @@ export async function PUT(req: NextRequest) {
   const json = await req.json();
   const parsed = ThemeSchema.safeParse(json);
   if (!parsed.success) return NextResponse.json({ error: parsed.error.message }, { status: 400 });
-  const { public_id, ...rest } = parsed.data as any;
+  const { public_id, primary, ...rest } = parsed.data as any;
+  const colorUpdate = primary ? { colors: { primary } as any } : {};
   const theme = await prisma.widgetTheme.upsert({
     where: { public_id },
-    create: { public_id, colors: { primary: '#111827' } as any, position: 'bottom-right', greeting: rest.greeting || 'Chat with us', ...rest },
-    update: rest as any,
+    create: { public_id, colors: { primary: primary || '#111827' } as any, position: 'bottom-right', greeting: rest.greeting || 'Chat with us', ...rest },
+    update: { ...rest, ...colorUpdate } as any,
   });
   return NextResponse.json({ theme });
 }

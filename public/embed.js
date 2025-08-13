@@ -108,8 +108,9 @@
     const res = await fetch(backendOrigin + '/api/widget/config?public_id='+encodeURIComponent(configId));
     const theme = await res.json();
     title.textContent = theme.greeting || 'Chat with us';
-    header.style.background = (theme.colors && theme.colors.primary) || '#111827';
-    launcher.style.background = (theme.colors && theme.colors.primary) || '#111827';
+    const primary = (theme.colors && theme.colors.primary) || '#111827';
+    header.style.background = primary;
+    launcher.style.background = primary;
     if (theme.avatar_url) {
       avatar.src = theme.avatar_url;
       avatar.style.display = '';
