@@ -64,6 +64,7 @@ model AIConfig {
   model         String  @default("gpt-5")
   system_prompt String
   kb_text       String  @default("")
+  api_key_enc   String?
   updated_at    DateTime @updatedAt
 }
 

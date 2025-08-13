@@ -42,11 +42,17 @@ export default function WidgetSettingsPage(){
             <option value="every_visit">Every visit</option>
           </select>
         </label>
+        <label className="block">Greeting
+          <input className="border p-2 w-full" value={theme.greeting || ''} onChange={e=>setTheme({...theme, greeting: e.target.value})} />
+        </label>
+        <label className="block">Avatar URL
+          <input className="border p-2 w-full" placeholder="https://..." value={theme.avatar_url || ''} onChange={e=>setTheme({...theme, avatar_url: e.target.value})} />
+        </label>
         <button className="px-3 py-2 bg-black text-white rounded" onClick={save}>Save</button>
       </div>
       <div className="p-4 bg-white rounded shadow">
         <h2 className="text-lg font-medium mb-2">Live Preview</h2>
-        <iframe srcDoc={`<!doctype html><html><body><script src="/embed.js" data-chat-config="${publicId}" async></script></body></html>`} className="w-full h-[520px] border rounded" />
+        <iframe srcDoc={`<!doctype html><html><body><script src="/embed.js" data-chat-config="${publicId}" data-origin="${location.origin}" async></script></body></html>`} className="w-full h-[520px] border rounded" />
       </div>
     </div>
   );

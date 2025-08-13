@@ -5,11 +5,12 @@ export default function AIPage(){
   const [model, setModel] = useState('gpt-5');
   const [prompt, setPrompt] = useState('');
   const [kb, setKb] = useState('');
+  const [apiKey, setApiKey] = useState('');
   const [testInput, setTestInput] = useState('');
   const [testOutput, setTestOutput] = useState('');
   useEffect(()=>{ fetch('/api/admin/ai-config').then(r=>r.json()).then(d=>{ if (d.ai){ setModel(d.ai.model||'gpt-5'); setPrompt(d.ai.system_prompt||''); setKb(d.ai.kb_text||''); } }); },[]);
   async function save(){
-    const res = await fetch('/api/admin/ai-config', { method: 'PUT', headers: {'content-type':'application/json'}, body: JSON.stringify({ model, system_prompt: prompt, kb_text: kb }) });
+    const res = await fetch('/api/admin/ai-config', { method: 'PUT', headers: {'content-type':'application/json'}, body: JSON.stringify({ model, system_prompt: prompt, kb_text: kb, api_key: apiKey || undefined }) });
     if (!res.ok) alert('Save failed');
   }
   async function test(){
@@ -32,6 +33,10 @@ export default function AIPage(){
       </label>
       <label className="block">Knowledge base text
         <textarea className="border p-2 w-full" value={kb} onChange={e=>setKb(e.target.value)} />
+      </label>
+      <label className="block">AI API Key
+        <input type="password" className="border p-2 w-full" placeholder="sk-..." value={apiKey} onChange={e=>setApiKey(e.target.value)} />
+        <div className="text-xs text-gray-500 mt-1">Leave blank to keep existing key.</div>
       </label>
       <button className="px-3 py-2 bg-black text-white rounded" onClick={save}>Save</button>
       <div className="border-t pt-4 space-y-2">
