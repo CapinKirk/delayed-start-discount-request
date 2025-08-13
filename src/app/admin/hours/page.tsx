@@ -42,15 +42,18 @@ export default function HoursPage(){
                 </select>
               </td>
               <td>
-                <input list="tz-list" className="border p-1 w-full" value={r.tz} onChange={e=>update(i,'tz',e.target.value)} title="Select region or timezone; saved as REGION|Timezone for mapping." />
-                <datalist id="tz-list">
-                  {tzGroups.map(g=> (
-                    <>
-                      <option key={g.region} value={`${g.region}|${g.zones[0]}`}>{g.region}</option>
-                      {g.zones.map(z=> <option key={`${g.region}|${z}`} value={`${g.region}|${z}`}>{`${g.region} — ${z}`}</option>)}
-                    </>
+                <select
+                  className="border p-1 w-full"
+                  value={(r.tz.includes('|') ? r.tz.split('|')[1] : r.tz)}
+                  onChange={e=>{
+                    const region = (r.tz.split('|')[0] || 'GLOBAL');
+                    update(i,'tz', `${region}|${e.target.value}`);
+                  }}
+                >
+                  {tzGroups.find(g=> g.region === (r.tz.split('|')[0] as any || 'GLOBAL'))?.zones.map(z => (
+                    <option key={z} value={z}>{z}</option>
                   ))}
-                </datalist>
+                </select>
               </td>
               <td>
                 <select className="border p-1" value={r.weekday} onChange={e=>update(i,'weekday',e.target.value)}>

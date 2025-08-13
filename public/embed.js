@@ -1,7 +1,13 @@
 (function(){
-  const script = document.currentScript;
-  const configId = script?.dataset?.chatConfig || 'demo';
-  const backendOrigin = (script?.dataset?.origin) ? script.dataset.origin.replace(/\/$/, '') : (function(){ try { return new URL(script.src, window.location.href).origin; } catch { return window.location.origin; } })();
+  // Try multiple ways to locate the loader script to read data- attributes
+  const script = document.currentScript
+    || document.getElementById('por-embed-loader')
+    || document.querySelector('script[data-chat-config]')
+    || document.querySelector('script[src*="/embed.js"]');
+  const configId = (script && script.dataset && script.dataset.chatConfig) ? script.dataset.chatConfig : 'demo';
+  const backendOrigin = (script && script.dataset && script.dataset.origin)
+    ? script.dataset.origin.replace(/\/$/, '')
+    : (function(){ try { return new URL(script && script.src ? script.src : '/embed.js', window.location.href).origin; } catch { return window.location.origin; } })();
 
   const sessionKey = 'por_chat_session_id';
   let sessionId = localStorage.getItem(sessionKey);
@@ -355,6 +361,18 @@
       greeting: boot.auto_open_greeting || '',
       frequency: boot.auto_open_frequency || 'once_per_session'
     };
+    // If the embedding site requests auto-pop, honor it regardless of server default
+    try {
+      if (script && script.dataset) {
+        if (script.dataset.autopop === 'true') {
+          autoOpen.enabled = true;
+        }
+        if (script.dataset.autopopDelayMs) {
+          const ms = parseInt(script.dataset.autopopDelayMs, 10);
+          if (!Number.isNaN(ms)) autoOpen.delayMs = ms;
+        }
+      }
+    } catch {}
     if (shouldAutoOpen()) {
       setTimeout(async () => {
         openPanel();

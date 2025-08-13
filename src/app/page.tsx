@@ -23,19 +23,19 @@ export default function Home() {
             </a>
           ))}
         </div>
-        <div className="p-4 bg-white rounded-2xl border border-gray-200 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <div className="text-lg font-semibold">Widget is embedded at the lower-right corner of this page</div>
-            <a className="text-sm text-indigo-700 hover:underline" href="/admin/widget">Open Widget Settings →</a>
-          </div>
-          <div className="text-sm text-gray-600">No boxed preview. Use the real launcher in the corner to test.</div>
+        <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-200 shadow-sm">
+          <div className="text-lg font-semibold">Widget is embedded on this page</div>
+          <a className="text-sm text-indigo-700 hover:underline" href="/admin/widget">Open Widget Settings →</a>
         </div>
       </div>
       <Script
+        id="por-embed-loader"
         src="/embed.js"
         strategy="afterInteractive"
         data-chat-config={process.env.PUBLIC_WIDGET_CONFIG_ID || 'demo'}
         data-origin=""
+        data-autopop="true"
+        data-autopop-delay-ms="2000"
       />
     </div>
   );

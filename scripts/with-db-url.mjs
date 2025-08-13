@@ -21,3 +21,4 @@ execSync('npx prisma migrate deploy', { stdio: 'inherit' });
 execSync('next build', { stdio: 'inherit' });
 
 
+
