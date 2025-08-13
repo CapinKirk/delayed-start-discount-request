@@ -20,14 +20,24 @@
   launcher.style.borderRadius = '999px';
   launcher.style.background = '#111827';
   launcher.style.color = 'white';
+  launcher.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+  launcher.style.transition = 'transform 150ms ease, box-shadow 150ms ease, opacity 200ms ease';
+  launcher.addEventListener('mouseenter',()=>{ launcher.style.transform='translateY(-2px)'; launcher.style.boxShadow='0 12px 28px rgba(0,0,0,0.2)'; });
+  launcher.addEventListener('mouseleave',()=>{ launcher.style.transform=''; launcher.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)'; });
+  // subtle attention pulse
+  launcher.animate([
+    { transform:'scale(1)', opacity:1 },
+    { transform:'scale(1.05)', opacity:0.96 },
+    { transform:'scale(1)', opacity:1 }
+  ], { duration: 1500, iterations: 1, delay: 2000 });
   document.body.appendChild(launcher);
 
   const panel = document.createElement('div');
   panel.style.position = 'fixed';
-  panel.style.bottom = '70px';
+  panel.style.bottom = '80px';
   panel.style.right = '16px';
-  panel.style.width = '360px';
-  panel.style.height = '480px';
+  panel.style.width = '420px';
+  panel.style.height = '560px';
   panel.style.background = 'white';
   panel.style.border = '1px solid #e5e7eb';
   panel.style.borderRadius = '12px';
@@ -183,14 +193,26 @@
       lastSeq = payload.seq || lastSeq;
       lastServerT = payload.t || lastServerT;
       typingAI = true;
-      // Generic typing indicator
       if (!messages.querySelector('#typing')){
         const tip = document.createElement('div');
         tip.id = 'typing';
-        tip.textContent = (maskRoles ? unifiedDisplayName : 'Support') + ' is typing…';
-        tip.style.fontSize = '12px';
-        tip.style.color = '#6b7280';
+        tip.style.display = 'inline-flex';
+        tip.style.alignItems = 'center';
+        tip.style.gap = '6px';
+        const dots = document.createElement('span');
+        dots.textContent = '•••';
+        dots.style.letterSpacing = '2px';
+        dots.style.animation = 'por-dots 1s infinite';
+        const label = document.createElement('span');
+        label.textContent = (maskRoles ? unifiedDisplayName : 'Support') + ' is typing';
+        label.style.fontSize = '12px';
+        label.style.color = '#6b7280';
+        tip.appendChild(label);
+        tip.appendChild(dots);
         messages.appendChild(tip);
+        const style = document.createElement('style');
+        style.textContent = '@keyframes por-dots { 0%{opacity:.2} 50%{opacity:1} 100%{opacity:.2} }';
+        document.head.appendChild(style);
       }
     });
     realtimeChannel.on('broadcast', { event: 'ai.done' }, async ({ payload }) => {

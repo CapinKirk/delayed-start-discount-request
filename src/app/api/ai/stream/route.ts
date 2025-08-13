@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import { PrismaClient } from "@/generated/prisma";
 import { RealtimePublisher } from "@/lib/realtime";
 import { postThreadMessage } from "@/lib/slack";
+import { decryptString } from "@/lib/crypto";
 
 const prisma = new PrismaClient();
 
@@ -19,7 +20,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ suppressed: true });
   }
 
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const configuredKey = aiConfig?.api_key_enc ? decryptString(aiConfig.api_key_enc) : undefined;
+  const apiKey = configuredKey || process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json({ error: "missing_openai_api_key" }, { status: 400 });
+  }
+  const client = new OpenAI({ apiKey });
   const pub = new RealtimePublisher();
 
   const content = messages.map((m) => `${m.role}: ${m.text}`).join("\n");
