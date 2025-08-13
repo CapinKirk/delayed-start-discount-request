@@ -4,6 +4,7 @@ import { PrismaClient } from "@/generated/prisma";
 import { RealtimePublisher } from "@/lib/realtime";
 import { postThreadMessage } from "@/lib/slack";
 import { decryptString } from "@/lib/crypto";
+import { getOpenAIKey } from "@/lib/ai-key";
 
 const prisma = new PrismaClient();
 
@@ -22,14 +23,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ suppressed: true });
   }
 
-  let configuredKey: string | undefined = undefined;
-  if (aiConfig?.api_key_enc) {
-    try { configuredKey = decryptString(aiConfig.api_key_enc); } catch { configuredKey = undefined; }
-  }
-  if (!configuredKey && (globalThis as any).__AI_KEY_FALLBACK) {
-    try { configuredKey = decryptString((globalThis as any).__AI_KEY_FALLBACK); } catch {}
-  }
-  const apiKey = configuredKey || process.env.OPENAI_API_KEY;
+  const apiKey = await getOpenAIKey();
   if (!apiKey) {
     return NextResponse.json({ error: "missing_openai_api_key" }, { status: 400 });
   }

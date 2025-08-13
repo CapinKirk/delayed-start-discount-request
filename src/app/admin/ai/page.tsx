@@ -2,14 +2,18 @@
 import { useEffect, useState } from 'react';
 
 export default function AIPage(){
-  const [model, setModel] = useState('gpt-5');
+  const [model, setModel] = useState('gpt-4o-mini');
   const [prompt, setPrompt] = useState('');
   const [kb, setKb] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [hasApiKey, setHasApiKey] = useState<boolean>(false);
+  const [models, setModels] = useState<string[]>([]);
   const [testInput, setTestInput] = useState('');
   const [testOutput, setTestOutput] = useState('');
-  useEffect(()=>{ fetch('/api/admin/ai-config').then(r=>r.json()).then(d=>{ if (d.ai){ setModel(d.ai.model||'gpt-5'); setPrompt(d.ai.system_prompt||''); setKb(d.ai.kb_text||''); setHasApiKey(!!d.ai.has_api_key); } }); },[]);
+  useEffect(()=>{ 
+    fetch('/api/admin/ai-config').then(r=>r.json()).then(d=>{ if (d.ai){ setModel(d.ai.model||'gpt-4o-mini'); setPrompt(d.ai.system_prompt||''); setKb(d.ai.kb_text||''); setHasApiKey(!!d.ai.has_api_key); } });
+    fetch('/api/ai/models').then(r=>r.json()).then(d=> setModels(d.models||[]));
+  },[]);
   async function save(){
     try {
       const res = await fetch('/api/admin/ai-config', { method: 'PUT', headers: {'content-type':'application/json'}, body: JSON.stringify({ model, system_prompt: prompt, kb_text: kb, api_key: apiKey || undefined }) });
@@ -45,7 +49,9 @@ export default function AIPage(){
       <h2 className="text-lg font-medium">AI Configuration</h2>
       <div className="text-xs text-gray-600">OpenAI key status: {hasApiKey? 'configured' : 'not set'}</div>
       <label className="block">Model
-        <input className="border p-2 w-full" value={model} onChange={e=>setModel(e.target.value)} />
+        <select className="border p-2 w-full" value={model} onChange={e=>setModel(e.target.value)}>
+          {models.map(m => <option key={m} value={m}>{m}</option>)}
+        </select>
       </label>
       <label className="block">System prompt
         <textarea className="border p-2 w-full" value={prompt} onChange={e=>setPrompt(e.target.value)} />
