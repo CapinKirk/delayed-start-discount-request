@@ -373,7 +373,7 @@
   }
 
   function openPanel(){
-    if (panel.style.display !== 'block') panel.style.display = 'block';
+    if (panel.style.display !== 'flex') panel.style.display = 'flex';
   }
 
   async function scheduleAutoOpen(){
@@ -384,7 +384,7 @@
       document.head.appendChild(s);
       await new Promise(r => s.onload = r);
     }
-    const boot = await fetch(backendOrigin + '/api/widget/bootstrap').then(r=>r.json());
+    const boot = await fetch(backendOrigin + '/api/widget/bootstrap?public_id='+encodeURIComponent(configId)).then(r=>r.json());
     maskRoles = !!boot.mask_roles;
     unifiedDisplayName = boot.unified_display_name || 'Support';
     autoOpen = {
@@ -416,7 +416,11 @@
           // enqueue greeting into pipeline like a real agent message
           addMessage('agent', autoOpen.greeting);
           try { await fetch(backendOrigin + '/api/chat/send', { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ conversation_id: conversationId, text: autoOpen.greeting }) }); } catch {}
-          try { await fetch(backendOrigin + '/api/ai/stream'+currentQuery(), { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ conversation_id: conversationId }) }); } catch {}
+          try {
+            const r = await fetch(backendOrigin + '/api/ai/stream'+currentQuery(), { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ conversation_id: conversationId }) });
+            const j = await r.json().catch(()=>null);
+            if (j && j.text) { addMessage('agent', j.text); }
+          } catch {}
         }
       }, autoOpen.delayMs);
     }

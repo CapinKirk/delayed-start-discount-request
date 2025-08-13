@@ -45,7 +45,8 @@ export default function HoursPage(){
                   const inferredRegion = hasRegion
                     ? (r.tz.split('|')[0] as any)
                     : (tzGroups.find(g => g.zones.includes(curZone))?.region || 'GLOBAL');
-                  const zones = (tzGroups.find(g => g.region === inferredRegion)?.zones) || tzGroups[0].zones;
+                  const zones = (tzGroups.find(g => g.region === inferredRegion)?.zones)
+                    || tzGroups.flatMap(g=>g.zones);
                   return (
                     <select
                       className="border p-1 w-full"
