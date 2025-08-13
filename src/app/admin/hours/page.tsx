@@ -29,10 +29,18 @@ export default function HoursPage(){
       <p className="text-sm text-gray-600">Add one or more rows; a time is considered in-hours if it matches any row, in its timezone.</p>
       <button className="px-3 py-2 bg-indigo-600 text-white rounded" onClick={add}>Add Row</button>
       <table className="w-full text-sm">
-        <thead><tr><th className="text-left">Timezone</th><th className="text-left">Weekday</th><th className="text-left">Start</th><th className="text-left">End</th></tr></thead>
+        <thead><tr><th className="text-left">Region</th><th className="text-left">Timezone</th><th className="text-left">Weekday</th><th className="text-left">Start</th><th className="text-left">End</th></tr></thead>
         <tbody>
           {rows.map((r, i) => (
             <tr key={i}>
+              <td>
+                <select className="border p-1 w-full" value={(r.tz.split('|')[0]||'GLOBAL')} onChange={e=>{
+                  const z = r.tz.includes('|')? r.tz.split('|')[1]: r.tz;
+                  update(i,'tz',`${e.target.value}|${z}`);
+                }}>
+                  {['GLOBAL','AMER','EMEA','APAC'].map(reg=> <option key={reg} value={reg}>{reg}</option>)}
+                </select>
+              </td>
               <td>
                 <input list="tz-list" className="border p-1 w-full" value={r.tz} onChange={e=>update(i,'tz',e.target.value)} title="Select region or timezone; saved as REGION|Timezone for mapping." />
                 <datalist id="tz-list">

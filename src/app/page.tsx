@@ -1,3 +1,5 @@
+import Script from 'next/script';
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -29,6 +31,12 @@ export default function Home() {
           <div className="text-sm text-gray-600">No boxed preview. Use the real launcher in the corner to test.</div>
         </div>
       </div>
+      <Script
+        src="/embed.js"
+        strategy="afterInteractive"
+        data-chat-config={process.env.PUBLIC_WIDGET_CONFIG_ID || 'demo'}
+        data-origin=""
+      />
     </div>
   );
 }

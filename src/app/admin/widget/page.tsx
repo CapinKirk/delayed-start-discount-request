@@ -17,7 +17,8 @@ export default function WidgetSettingsPage(){
     const s = document.createElement('script');
     s.id = id;
     s.src = '/embed.js';
-    (s as any).dataset = { chatConfig: publicId, origin: window.location.origin } as any;
+    s.setAttribute('data-chat-config', publicId);
+    s.setAttribute('data-origin', window.location.origin);
     s.async = true;
     document.body.appendChild(s);
     return () => { /* keep widget available while on page */ };
