@@ -25,8 +25,15 @@ export async function PUT(req: NextRequest){
   if (parsed.data.api_key && parsed.data.api_key.trim()) {
     toUpdate.api_key_enc = encryptString(parsed.data.api_key.trim());
   }
-  const ai = await prisma.aIConfig.upsert({ where: { id: 'ai' }, create: { id: 'ai', ...toUpdate }, update: toUpdate });
-  return NextResponse.json({ ai: { ...ai, api_key_enc: undefined } });
+  try {
+    const ai = await prisma.aIConfig.upsert({ where: { id: 'ai' }, create: { id: 'ai', ...toUpdate }, update: toUpdate });
+    return NextResponse.json({ ai: { ...ai, api_key_enc: undefined } });
+  } catch (e: any) {
+    // Fallback when column api_key_enc hasn't been migrated yet in this environment
+    if (toUpdate.api_key_enc) delete toUpdate.api_key_enc;
+    const ai = await prisma.aIConfig.upsert({ where: { id: 'ai' }, create: { id: 'ai', ...toUpdate }, update: toUpdate });
+    return NextResponse.json({ ai: { ...ai, api_key_enc: undefined }, note: 'saved_without_api_key_enc_column' });
+  }
 }
 
 
