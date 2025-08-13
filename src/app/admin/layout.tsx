@@ -13,6 +13,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </header>
       <main className="mx-auto max-w-6xl p-6">
+        <div className="mb-3 text-[11px] text-gray-500">Diagnostics are logged to the browser console for each admin page.</div>
         {children}
       </main>
     </div>

@@ -1,19 +1,22 @@
 export default function AdminHome() {
   return (
     <div className="space-y-6">
-      <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-200">
-        <h2 className="text-lg font-semibold tracking-tight">Slack Connection</h2>
-        <p className="text-sm text-gray-600">Connect your Slack workspace and select a channel.</p>
-        <a className="inline-block mt-3 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition" href="/api/slack/oauth/start">Connect Slack</a>
-      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <a href="/admin/slack" className="p-4 bg-white rounded-xl shadow-sm border border-gray-200 block hover:shadow transition">Slack Settings</a>
-        <a href="/admin/agents" className="p-4 bg-white rounded-xl shadow-sm border border-gray-200 block hover:shadow transition">Agents</a>
-        <a href="/admin/hours" className="p-4 bg-white rounded-xl shadow-sm border border-gray-200 block hover:shadow transition">Business Hours</a>
-        <a href="/admin/routing" className="p-4 bg-white rounded-xl shadow-sm border border-gray-200 block hover:shadow transition">Routing Policy</a>
-        <a href="/admin/ai" className="p-4 bg-white rounded-xl shadow-sm border border-gray-200 block hover:shadow transition">AI Config</a>
-        <a href="/admin/widget" className="p-4 bg-white rounded-xl shadow-sm border border-gray-200 block hover:shadow transition">Widget Settings</a>
-        <a href="/admin/embed" className="p-4 bg-white rounded-xl shadow-sm border border-gray-200 block hover:shadow transition">Embed Snippet</a>
+        {[
+          { href:'/admin/slack', title:'Slack', desc:'Connect workspace and channel', icon:'💬' },
+          { href:'/admin/agents', title:'Agents', desc:'Manage team, regions and avatars', icon:'👥' },
+          { href:'/admin/hours', title:'Hours', desc:'Configure global/region time windows', icon:'⏰' },
+          { href:'/admin/routing', title:'Routing', desc:'Timeout and AI suppression', icon:'🔄' },
+          { href:'/admin/ai', title:'AI', desc:'Model, prompt, knowledge, API key', icon:'🧠' },
+          { href:'/admin/widget', title:'Widget', desc:'Branding, behavior, preview', icon:'🎛️' },
+          { href:'/admin/embed', title:'Embed', desc:'Install snippet on your site', icon:'📋' },
+        ].map(card => (
+          <a key={card.href} href={card.href} className="p-6 rounded-2xl bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-sm hover:shadow-md transition block">
+            <div className="text-3xl mb-3" aria-hidden>{card.icon}</div>
+            <div className="text-base font-semibold text-gray-900">{card.title}</div>
+            <div className="text-sm text-gray-600">{card.desc}</div>
+          </a>
+        ))}
       </div>
       <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-200">
         <h2 className="text-lg font-semibold tracking-tight">Widget Embed</h2>

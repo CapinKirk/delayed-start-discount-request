@@ -43,6 +43,8 @@ model Agent {
   display_name  String
   active        Boolean @default(true)
   order_index   Int
+  avatar_url    String?
+  region        String?
 }
 
 model RoutingPolicy {

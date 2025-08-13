@@ -33,9 +33,9 @@
   launcherIcon.setAttribute('viewBox','0 0 24 24');
   launcherIcon.style.width = '60px';
   launcherIcon.style.height = '60px';
-  launcherIcon.style.background = '#111827';
-  launcherIcon.style.fill = 'white';
-  launcherIcon.innerHTML = '<path d="M2 5a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H9.4l-4.2 3.15A1 1 0 0 1 3 19.4V14.5A3 3 0 0 1 2 14V5z"/>';
+  launcherIcon.style.background = 'transparent';
+  launcherIcon.style.fill = '#fff';
+  launcherIcon.innerHTML = '<circle cx="12" cy="12" r="11" fill="currentColor" opacity="0.08"/><path d="M3 6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H9.5l-3.8 2.85A1 1 0 0 1 4 18.05V16a3 3 0 0 1-1-2V6z" fill="currentColor" opacity="0.9"/>';
   launcher.appendChild(launcherImg);
   launcher.appendChild(launcherIcon);
   launcher.addEventListener('mouseenter',()=>{ launcher.style.transform='translateY(-2px)'; launcher.style.boxShadow='0 16px 36px rgba(0,0,0,0.28)'; });
@@ -49,19 +49,25 @@
   ring.style.height = '60px';
   ring.style.borderRadius = '50%';
   ring.style.pointerEvents = 'none';
-  ring.style.boxShadow = '0 0 0 8px rgba(17,24,39,0.15)';
+  ring.style.boxShadow = '0 0 0 0 rgba(17,24,39,0.0)';
   ring.style.transition = 'box-shadow 600ms ease';
   document.body.appendChild(launcher);
   document.body.appendChild(ring);
+  // Preload theme so launcher avatar shows before first click
+  (async ()=>{ try { await applyTheme(); } catch {} })();
+  // Idle attention bounce
+  setInterval(()=>{
+    try { launcher.animate([{ transform:'translateY(0)' }, { transform:'translateY(-4px)' }, { transform:'translateY(0)' }], { duration: 400, iterations: 1 }); } catch {}
+  }, 12000);
 
   const panel = document.createElement('div');
   panel.style.position = 'fixed';
-  panel.style.bottom = '80px';
-  panel.style.right = '16px';
+  panel.style.bottom = '18px';
+  panel.style.right = '94px';
   panel.style.width = '420px';
   panel.style.height = '560px';
   panel.style.background = 'white';
-  panel.style.border = '1px solid #e5e7eb';
+  panel.style.border = '0';
   panel.style.borderRadius = '12px';
   panel.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
   panel.style.display = 'none';
@@ -145,7 +151,7 @@
       launcherIcon.style.display = '';
       launcherImg.style.display = 'none';
     }
-    ring.style.boxShadow = `0 0 0 8px ${hexToRgba(primary,0.15)}`;
+    ring.style.boxShadow = `0 0 0 0 ${hexToRgba(primary,0.0)}`;
     if (theme.position === 'bottom-left') {
       launcher.style.left = '16px';
       launcher.style.right = '';
@@ -368,6 +374,7 @@
           await ensureConversation();
         }
         if (autoOpen.greeting) {
+          // send greeting into pipeline so it mirrors to Slack and logs properly
           addMessage('agent', autoOpen.greeting);
         }
       }, autoOpen.delayMs);

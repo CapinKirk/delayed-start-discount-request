@@ -5,6 +5,7 @@ export default function RoutingPage(){
   const [timeoutSeconds, setTimeoutSeconds] = useState(30);
   const [suppressionSeconds, setSuppressionSeconds] = useState(300);
   useEffect(() => { fetch('/api/admin/routing').then(r=>r.json()).then(d=>{ if (d.routing){ setTimeoutSeconds(d.routing.timeout_seconds||30); setSuppressionSeconds(((d.routing.human_suppression_minutes||5)*60)); } }); }, []);
+  useEffect(() => { console.log('[admin/routing] timeoutSeconds', timeoutSeconds, 'suppressionSeconds', suppressionSeconds); }, [timeoutSeconds, suppressionSeconds]);
   async function save(){
     const minutes = Math.max(1, Math.round((suppressionSeconds||0)/60));
     const res = await fetch('/api/admin/routing', { method:'PUT', headers: {'content-type':'application/json'}, body: JSON.stringify({ timeout_seconds: timeoutSeconds, human_suppression_minutes: minutes }) });

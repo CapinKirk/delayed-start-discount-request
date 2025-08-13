@@ -6,6 +6,7 @@ export default function WidgetSettingsPage(){
   const publicId = process.env.NEXT_PUBLIC_WIDGET_PUBLIC_ID || (process.env.PUBLIC_WIDGET_CONFIG_ID || 'demo');
 
   useEffect(() => {
+    console.log('[admin/widget] load theme', { publicId });
     fetch(`/api/admin/widget-theme?public_id=${publicId}`).then(r=>r.json()).then(d=>setTheme(d.theme || {}));
   }, []);
 
@@ -13,6 +14,7 @@ export default function WidgetSettingsPage(){
 
   async function save(){
     const payload = { public_id: publicId, ...theme };
+    console.log('[admin/widget] save', payload);
     const res = await fetch('/api/admin/widget-theme', { method: 'PUT', headers: { 'content-type':'application/json' }, body: JSON.stringify(payload) });
     if (!res.ok) alert('Save failed');
   }

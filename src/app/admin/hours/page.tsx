@@ -6,10 +6,14 @@ type Row = { tz: string; weekday: number; start_local_time: string; end_local_ti
 export default function HoursPage(){
   const [rows, setRows] = useState<Row[]>([]);
   const weekdays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const tzOptions = [
-    'UTC','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','Europe/London','Europe/Berlin','Asia/Tokyo','Asia/Singapore','Australia/Sydney'
+  const tzGroups: Array<{region: 'AMER'|'EMEA'|'APAC'|'GLOBAL', zones: string[]}> = [
+    { region: 'GLOBAL', zones: ['UTC'] },
+    { region: 'AMER', zones: ['America/New_York','America/Chicago','America/Denver','America/Los_Angeles','America/Sao_Paulo'] },
+    { region: 'EMEA', zones: ['Europe/London','Europe/Berlin','Europe/Paris','Africa/Johannesburg'] },
+    { region: 'APAC', zones: ['Asia/Tokyo','Asia/Singapore','Asia/Kolkata','Australia/Sydney'] },
   ];
   useEffect(() => { fetch('/api/admin/hours').then(r=>r.json()).then(d=> setRows(d.hours || [])); }, []);
+  useEffect(() => { console.log('[admin/hours] rows', rows); }, [rows]);
 
   function update(i: number, field: keyof Row, value: string){
     setRows(prev => prev.map((r, idx) => idx===i? { ...r, [field]: value } as any : r));
@@ -30,9 +34,14 @@ export default function HoursPage(){
           {rows.map((r, i) => (
             <tr key={i}>
               <td>
-                <input list="tz-list" className="border p-1 w-full" value={r.tz} onChange={e=>update(i,'tz',e.target.value)} title="IANA timezone, e.g., America/Chicago" />
+                <input list="tz-list" className="border p-1 w-full" value={r.tz} onChange={e=>update(i,'tz',e.target.value)} title="Select region or timezone; saved as REGION|Timezone for mapping." />
                 <datalist id="tz-list">
-                  {tzOptions.map(z=> <option value={z} key={z} />)}
+                  {tzGroups.map(g=> (
+                    <>
+                      <option key={g.region} value={`${g.region}|${g.zones[0]}`}>{g.region}</option>
+                      {g.zones.map(z=> <option key={`${g.region}|${z}`} value={`${g.region}|${z}`}>{`${g.region} — ${z}`}</option>)}
+                    </>
+                  ))}
                 </datalist>
               </td>
               <td>

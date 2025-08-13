@@ -8,16 +8,20 @@ export default function AgentsPage(){
   const [newUser, setNewUser] = useState('');
   const [newName, setNewName] = useState('');
   const [directory, setDirectory] = useState<{id:string;name:string}[]>([]);
+  const [newAvatar, setNewAvatar] = useState('');
+  const [newRegion, setNewRegion] = useState<'AMER'|'EMEA'|'APAC'|'GLOBAL'|''>('');
 
   async function load(){
+    console.log('[admin/agents] load');
     const res = await fetch('/api/admin/agents');
     const data = await res.json();
     setAgents(data.agents || []);
   }
   useEffect(() => { load(); fetch('/api/admin/slack/users').then(r=>r.json()).then(d=> setDirectory(d.users||[])); }, []);
+  
 
   async function add(){
-    const res = await fetch('/api/admin/agents', { method: 'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ slack_user_id: newUser, display_name: newName, order_index: agents.length, active: true }) });
+    const res = await fetch('/api/admin/agents', { method: 'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ slack_user_id: newUser, display_name: newName, order_index: agents.length, active: true, avatar_url: newAvatar || undefined, region: newRegion || undefined }) });
     if (res.ok) { setNewUser(''); setNewName(''); load(); } else alert('Add failed');
   }
 
@@ -52,10 +56,26 @@ export default function AgentsPage(){
             <input className="border p-2 w-full" placeholder="Display name" value={newName} onChange={e=>setNewName(e.target.value)} />
           </div>
         </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Agent image URL (optional)</label>
+            <input className="border p-2 w-full" placeholder="https://... transparent PNG recommended" value={newAvatar} onChange={e=>setNewAvatar(e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Region</label>
+            <select className="border p-2 w-full" value={newRegion} onChange={e=>setNewRegion(e.target.value as any)}>
+              <option value="">Unspecified</option>
+              <option value="GLOBAL">GLOBAL</option>
+              <option value="AMER">AMER</option>
+              <option value="EMEA">EMEA</option>
+              <option value="APAC">APAC</option>
+            </select>
+          </div>
+        </div>
         <button className="px-3 py-2 bg-indigo-600 text-white rounded-md" onClick={add} disabled={!newUser || !newName || agents.length>=4}>Add</button>
       </div>
       <ul className="space-y-2">
-        {agents.map((a, i) => (
+          {agents.map((a, i) => (
           <li key={a.id} className="border p-2 rounded flex items-center justify-between">
             <div>
               <div className="font-medium">{a.display_name}</div>
