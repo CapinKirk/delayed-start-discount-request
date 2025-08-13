@@ -10,6 +10,19 @@ export default function WidgetSettingsPage(){
     fetch(`/api/admin/widget-theme?public_id=${publicId}`).then(r=>r.json()).then(d=>setTheme(d.theme || {}));
   }, []);
 
+  // Inject real widget into page lower-right for natural preview
+  useEffect(() => {
+    const id = 'por-embed-loader';
+    if (document.getElementById(id)) return;
+    const s = document.createElement('script');
+    s.id = id;
+    s.src = '/embed.js';
+    (s as any).dataset = { chatConfig: publicId, origin: window.location.origin } as any;
+    s.async = true;
+    document.body.appendChild(s);
+    return () => { /* keep widget available while on page */ };
+  }, [publicId]);
+
   if (!theme) return <div className="p-4 bg-white rounded shadow">Loading…</div>;
 
   async function save(){
@@ -59,7 +72,7 @@ export default function WidgetSettingsPage(){
       </div>
       <div className="p-4 bg-white rounded-xl shadow-sm border border-gray-200">
         <h2 className="text-lg font-semibold tracking-tight mb-2">Live Preview</h2>
-        <iframe srcDoc={`<!doctype html><html><body><script src="/embed.js" data-chat-config="${publicId}" data-origin="${location.origin}" async></script></body></html>`} className="w-full h-[520px] border rounded" />
+        <p className="text-sm text-gray-600">The widget is loaded on this page and anchored to the lower-right corner. Use the launcher to preview.</p>
       </div>
     </div>
   );

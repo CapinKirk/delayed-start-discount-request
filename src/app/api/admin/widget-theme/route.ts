@@ -44,10 +44,10 @@ export async function PUT(req: NextRequest) {
   const parsed = ThemeSchema.safeParse(json);
   if (!parsed.success) return NextResponse.json({ error: parsed.error.message }, { status: 400 });
   const { public_id, primary, ...rest } = parsed.data as any;
-  const colorUpdate = primary ? { colors: { primary } as any } : {};
+  const colorUpdate = { colors: { primary: primary || (rest?.colors?.primary) || '#111827' } as any };
   const theme = await prisma.widgetTheme.upsert({
     where: { public_id },
-    create: { public_id, colors: { primary: primary || '#111827' } as any, position: 'bottom-right', greeting: rest.greeting || 'Chat with us', ...rest },
+    create: { public_id, ...colorUpdate, position: 'bottom-right', greeting: rest.greeting || 'Chat with us', ...rest },
     update: { ...rest, ...colorUpdate } as any,
   });
   return NextResponse.json({ theme });

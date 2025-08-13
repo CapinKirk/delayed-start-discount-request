@@ -21,6 +21,7 @@
   launcher.style.overflow = 'hidden';
   launcher.style.padding = '0';
   launcher.style.border = 'none';
+  launcher.style.outline = 'none';
   launcher.style.background = 'transparent';
   launcher.style.boxShadow = '0 12px 30px rgba(0,0,0,0.22)';
   launcher.style.transition = 'transform 150ms ease, box-shadow 150ms ease, opacity 200ms ease';
@@ -40,19 +41,8 @@
   launcher.appendChild(launcherIcon);
   launcher.addEventListener('mouseenter',()=>{ launcher.style.transform='translateY(-2px)'; launcher.style.boxShadow='0 16px 36px rgba(0,0,0,0.28)'; });
   launcher.addEventListener('mouseleave',()=>{ launcher.style.transform=''; launcher.style.boxShadow='0 12px 30px rgba(0,0,0,0.22)'; });
-  // pulse ring
-  const ring = document.createElement('div');
-  ring.style.position = 'fixed';
-  ring.style.bottom = '16px';
-  ring.style.right = '16px';
-  ring.style.width = '60px';
-  ring.style.height = '60px';
-  ring.style.borderRadius = '50%';
-  ring.style.pointerEvents = 'none';
-  ring.style.boxShadow = '0 0 0 0 rgba(17,24,39,0.0)';
-  ring.style.transition = 'box-shadow 600ms ease';
   document.body.appendChild(launcher);
-  document.body.appendChild(ring);
+  // removed decorative ring to avoid any circular border effect
   // Preload theme so launcher avatar shows before first click
   (async ()=>{ try { await applyTheme(); } catch {} })();
   // Idle attention bounce
@@ -84,7 +74,7 @@
   avatar.style.height = '40px';
   avatar.style.borderRadius = '999px';
   avatar.style.objectFit = 'cover';
-  avatar.style.boxShadow = '0 4px 12px rgba(0,0,0,0.18)';
+  avatar.style.boxShadow = 'none';
   const title = document.createElement('span');
   title.textContent = 'Chat with us';
   headerInner.appendChild(avatar);
@@ -151,7 +141,6 @@
       launcherIcon.style.display = '';
       launcherImg.style.display = 'none';
     }
-    ring.style.boxShadow = `0 0 0 0 ${hexToRgba(primary,0.0)}`;
     if (theme.position === 'bottom-left') {
       launcher.style.left = '16px';
       launcher.style.right = '';
