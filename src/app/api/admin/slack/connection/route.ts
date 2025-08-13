@@ -7,7 +7,7 @@ export const runtime = 'nodejs';
 const prisma = new PrismaClient();
 const Schema = z.object({ channel_id: z.string().min(1) });
 
-declare global { var __SLACK_CONN_FALLBACK: { team_id: string; team_name: string; channel_id: string } | undefined }
+declare global { var __SLACK_CONN_FALLBACK: { team_id: string; team_name: string; channel_id: string; bot_token_enc?: string } | undefined }
 
 export async function GET(){
   try {
@@ -15,7 +15,7 @@ export async function GET(){
     if (c) return NextResponse.json({ connection: { team_id: c.team_id, team_name: c.team_name, channel_id: c.channel_id } });
   } catch {}
   // Fallback when database is unavailable (Preview)
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const fromCookie = cookieStore.get('slack_conn')?.value;
   if (fromCookie) {
     try { return NextResponse.json({ connection: JSON.parse(fromCookie) }); } catch {}

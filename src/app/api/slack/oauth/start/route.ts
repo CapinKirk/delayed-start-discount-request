@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
     "chat:write",
     "channels:history",
     "channels:read",
+    "groups:read",
     "users:read",
   ].join(",");
   const url = new URL("https://slack.com/oauth/v2/authorize");
