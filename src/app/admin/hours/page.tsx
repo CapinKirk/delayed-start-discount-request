@@ -10,7 +10,7 @@ export default function HoursPage(){
     { region: 'GLOBAL', zones: ['UTC'] },
     { region: 'AMER', zones: ['America/New_York','America/Chicago','America/Denver','America/Los_Angeles','America/Sao_Paulo'] },
     { region: 'EMEA', zones: ['Europe/London','Europe/Berlin','Europe/Paris','Africa/Johannesburg'] },
-    { region: 'APAC', zones: ['Asia/Tokyo','Asia/Singapore','Asia/Kolkata','Australia/Sydney'] },
+    { region: 'APAC', zones: ['Asia/Tokyo','Asia/Singapore','Asia/Seoul','Asia/Hong_Kong','Asia/Kuala_Lumpur','Asia/Jakarta','Asia/Manila','Asia/Bangkok','Asia/Taipei','Asia/Shanghai','Asia/Kolkata','Australia/Sydney','Australia/Perth','Australia/Melbourne','Pacific/Auckland'] },
   ];
   useEffect(() => { fetch('/api/admin/hours').then(r=>r.json()).then(d=> setRows(d.hours || [])); }, []);
   useEffect(() => { console.log('[admin/hours] rows', rows); }, [rows]);
@@ -42,18 +42,28 @@ export default function HoursPage(){
                 </select>
               </td>
               <td>
-                <select
-                  className="border p-1 w-full"
-                  value={(r.tz.includes('|') ? r.tz.split('|')[1] : r.tz)}
-                  onChange={e=>{
-                    const region = (r.tz.split('|')[0] || 'GLOBAL');
-                    update(i,'tz', `${region}|${e.target.value}`);
-                  }}
-                >
-                  {tzGroups.find(g=> g.region === (r.tz.split('|')[0] as any || 'GLOBAL'))?.zones.map(z => (
-                    <option key={z} value={z}>{z}</option>
-                  ))}
-                </select>
+                {(() => {
+                  const hasRegion = r.tz.includes('|');
+                  const curZone = hasRegion ? r.tz.split('|')[1] : r.tz;
+                  // Infer region from current zone if not encoded yet
+                  const inferredRegion = hasRegion
+                    ? (r.tz.split('|')[0] as any)
+                    : (tzGroups.find(g => g.zones.includes(curZone))?.region || 'GLOBAL');
+                  const zones = (tzGroups.find(g => g.region === inferredRegion)?.zones) || tzGroups[0].zones;
+                  return (
+                    <select
+                      className="border p-1 w-full"
+                      value={curZone}
+                      onChange={e=>{
+                        update(i,'tz', `${inferredRegion}|${e.target.value}`);
+                      }}
+                    >
+                      {zones.map(z => (
+                        <option key={z} value={z}>{z}</option>
+                      ))}
+                    </select>
+                  );
+                })()}
               </td>
               <td>
                 <select className="border p-1" value={r.weekday} onChange={e=>update(i,'weekday',e.target.value)}>

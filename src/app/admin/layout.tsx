@@ -20,9 +20,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </nav>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl p-6">
-        <div className="mb-3 text-[11px] text-gray-500">Diagnostics are logged to the browser console for each admin page.</div>
+      <main className="mx-auto max-w-6xl p-6 space-y-4">
         {children}
+        <div className="p-3 bg-white border border-gray-200 rounded-xl">
+          <div className="text-sm font-medium mb-1">Diagnostics</div>
+          <textarea
+            readOnly
+            className="w-full h-28 text-xs font-mono border rounded p-2 bg-gray-50"
+            value={typeof window !== 'undefined' ? JSON.stringify({ url: window.location.href, time: new Date().toISOString() }, null, 2) : '{}'}
+          />
+        </div>
       </main>
     </div>
   );

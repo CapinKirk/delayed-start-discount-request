@@ -21,9 +21,9 @@
   launcher.style.bottom = '16px';
   launcher.style.right = '16px';
   launcher.style.zIndex = '2147483647';
-  launcher.style.width = '60px';
-  launcher.style.height = '60px';
-  launcher.style.borderRadius = '50%';
+  launcher.style.width = '64px';
+  launcher.style.height = '64px';
+  launcher.style.borderRadius = '12px';
   launcher.style.overflow = 'hidden';
   launcher.style.padding = '0';
   launcher.style.border = 'none';
@@ -34,7 +34,7 @@
   const launcherImg = document.createElement('img');
   launcherImg.style.width = '100%';
   launcherImg.style.height = '100%';
-  launcherImg.style.objectFit = 'cover';
+  launcherImg.style.objectFit = 'contain';
   launcherImg.style.display = 'none';
   const launcherIcon = document.createElementNS('http://www.w3.org/2000/svg','svg');
   launcherIcon.setAttribute('viewBox','0 0 24 24');
@@ -67,6 +67,10 @@
   panel.style.borderRadius = '12px';
   panel.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
   panel.style.display = 'none';
+  panel.style.display = 'none';
+  panel.style.flexDirection = 'column';
+  panel.style.display = 'none';
+  panel.style.display = 'none';
   panel.style.overflow = 'hidden';
   panel.style.zIndex = '2147483647';
 
@@ -78,7 +82,7 @@
   const avatar = document.createElement('img');
   avatar.style.width = '40px';
   avatar.style.height = '40px';
-  avatar.style.borderRadius = '999px';
+  avatar.style.borderRadius = '8px';
   avatar.style.objectFit = 'cover';
   avatar.style.boxShadow = 'none';
   const title = document.createElement('span');
@@ -94,7 +98,8 @@
   const messages = document.createElement('div');
   messages.style.flex = '1';
   messages.style.padding = '12px';
-  messages.style.height = '460px';
+  // Let messages area grow to fill remaining height
+  messages.style.minHeight = '0';
   messages.style.overflowY = 'auto';
   panel.appendChild(messages);
 
@@ -109,6 +114,8 @@
   input.style.border = '1px solid #e5e7eb';
   input.style.borderRadius = '8px';
   input.style.padding = '8px';
+  input.style.background = '#ffffff';
+  input.style.color = '#111827';
   const send = document.createElement('button');
   send.type = 'submit';
   send.textContent = 'Send';
@@ -136,6 +143,7 @@
     title.textContent = theme.greeting || 'Chat with us';
     const primary = (theme.colors && theme.colors.primary) || '#111827';
     header.style.background = primary;
+    send.style.background = primary;
     if (theme.avatar_url) {
       avatar.src = theme.avatar_url;
       avatar.style.display = '';
@@ -214,7 +222,7 @@
   }
 
   launcher.addEventListener('click', async () => {
-    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
     panel.animate([
       { transform:'scale(0.98)', opacity:0.98 },
       { transform:'scale(1)', opacity:1 }

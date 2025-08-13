@@ -71,9 +71,14 @@ export default function WidgetSettingsPage(){
         </label>
         <button className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-md transition" onClick={save}>Save</button>
       </div>
-      <div className="p-4 bg-white rounded-xl shadow-sm border border-gray-200">
-        <h2 className="text-lg font-semibold tracking-tight mb-2">Live Preview</h2>
-        <p className="text-sm text-gray-600">The widget is loaded on this page and anchored to the lower-right corner. Use the launcher to preview.</p>
+      <div className="p-4 bg-white rounded-xl shadow-sm border border-gray-200 space-y-2">
+        <h2 className="text-lg font-semibold tracking-tight">Diagnostics</h2>
+        <textarea
+          readOnly
+          className="w-full h-32 text-xs font-mono border rounded p-2 bg-gray-50"
+          value={JSON.stringify({ theme, publicId }, null, 2)}
+        />
+        <p className="text-xs text-gray-500">The real widget is injected in the lower-right corner. Use the launcher to preview.</p>
       </div>
     </div>
   );
