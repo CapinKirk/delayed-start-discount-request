@@ -22,7 +22,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ suppressed: true });
   }
 
-  let configuredKey = aiConfig?.api_key_enc ? decryptString(aiConfig.api_key_enc) : undefined;
+  let configuredKey: string | undefined = undefined;
+  if (aiConfig?.api_key_enc) {
+    try { configuredKey = decryptString(aiConfig.api_key_enc); } catch { configuredKey = undefined; }
+  }
   if (!configuredKey && (globalThis as any).__AI_KEY_FALLBACK) {
     try { configuredKey = decryptString((globalThis as any).__AI_KEY_FALLBACK); } catch {}
   }
