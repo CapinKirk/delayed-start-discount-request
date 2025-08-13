@@ -11,7 +11,22 @@
   }
 
   const launcher = document.createElement('button');
-  launcher.textContent = 'Chat';
+  const launcherInner = document.createElement('span');
+  launcherInner.style.display = 'inline-flex';
+  launcherInner.style.alignItems = 'center';
+  launcherInner.style.gap = '8px';
+  const avatarSmall = document.createElement('img');
+  avatarSmall.style.width = '20px';
+  avatarSmall.style.height = '20px';
+  avatarSmall.style.borderRadius = '999px';
+  avatarSmall.style.border = '2px solid rgba(255,255,255,0.9)';
+  avatarSmall.style.background = '#fff';
+  avatarSmall.style.objectFit = 'cover';
+  const launcherLabel = document.createElement('span');
+  launcherLabel.textContent = 'Chat';
+  launcherInner.appendChild(avatarSmall);
+  launcherInner.appendChild(launcherLabel);
+  launcher.appendChild(launcherInner);
   launcher.style.position = 'fixed';
   launcher.style.bottom = '16px';
   launcher.style.right = '16px';
@@ -55,6 +70,9 @@
   avatar.style.width = '20px';
   avatar.style.height = '20px';
   avatar.style.borderRadius = '999px';
+  avatar.style.border = '2px solid rgba(255,255,255,0.9)';
+  avatar.style.background = '#fff';
+  avatar.style.objectFit = 'cover';
   const title = document.createElement('span');
   title.textContent = 'Chat with us';
   headerInner.appendChild(avatar);
@@ -114,8 +132,11 @@
     if (theme.avatar_url) {
       avatar.src = theme.avatar_url;
       avatar.style.display = '';
+      avatarSmall.src = theme.avatar_url;
+      avatarSmall.style.display = '';
     } else {
       avatar.style.display = 'none';
+      avatarSmall.style.display = 'none';
     }
     if (theme.position === 'bottom-left') {
       launcher.style.left = '16px';
