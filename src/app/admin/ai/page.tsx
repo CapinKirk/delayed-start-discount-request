@@ -6,9 +6,10 @@ export default function AIPage(){
   const [prompt, setPrompt] = useState('');
   const [kb, setKb] = useState('');
   const [apiKey, setApiKey] = useState('');
+  const [hasApiKey, setHasApiKey] = useState<boolean>(false);
   const [testInput, setTestInput] = useState('');
   const [testOutput, setTestOutput] = useState('');
-  useEffect(()=>{ fetch('/api/admin/ai-config').then(r=>r.json()).then(d=>{ if (d.ai){ setModel(d.ai.model||'gpt-5'); setPrompt(d.ai.system_prompt||''); setKb(d.ai.kb_text||''); } }); },[]);
+  useEffect(()=>{ fetch('/api/admin/ai-config').then(r=>r.json()).then(d=>{ if (d.ai){ setModel(d.ai.model||'gpt-5'); setPrompt(d.ai.system_prompt||''); setKb(d.ai.kb_text||''); setHasApiKey(!!d.ai.has_api_key); } }); },[]);
   async function save(){
     try {
       const res = await fetch('/api/admin/ai-config', { method: 'PUT', headers: {'content-type':'application/json'}, body: JSON.stringify({ model, system_prompt: prompt, kb_text: kb, api_key: apiKey || undefined }) });
@@ -18,7 +19,7 @@ export default function AIPage(){
         alert('Save failed: ' + (data?.error || res.status));
       } else {
         console.log('[admin/ai] saved', data);
-        if (data.saved_api_key) setApiKey('');
+        if (data.saved_api_key) { setApiKey(''); setHasApiKey(true); }
       }
     } catch (e) {
       console.error('[admin/ai] save exception', e);
@@ -37,6 +38,7 @@ export default function AIPage(){
   return (
     <div className="p-4 bg-white rounded shadow space-y-4">
       <h2 className="text-lg font-medium">AI Configuration</h2>
+      <div className="text-xs text-gray-600">OpenAI key status: {hasApiKey? 'configured' : 'not set'}</div>
       <label className="block">Model
         <input className="border p-2 w-full" value={model} onChange={e=>setModel(e.target.value)} />
       </label>
@@ -59,7 +61,7 @@ export default function AIPage(){
       </div>
       <div className="p-3 bg-white border border-gray-200 rounded-xl">
         <div className="text-sm font-medium mb-1">Diagnostics</div>
-        <textarea readOnly className="w-full h-28 text-xs font-mono border rounded p-2 bg-gray-50" value={JSON.stringify({ model, prompt, kb_length: kb.length, apiKeyProvided: !!apiKey }, null, 2)} />
+        <textarea readOnly className="w-full h-28 text-xs font-mono border rounded p-2 bg-gray-50" value={JSON.stringify({ model, prompt, kb_length: kb.length, apiKeyProvided: !!apiKey, has_api_key: hasApiKey }, null, 2)} />
       </div>
     </div>
   );

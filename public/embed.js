@@ -289,6 +289,12 @@
         tip.style.display = 'inline-flex';
         tip.style.alignItems = 'center';
         tip.style.gap = '6px';
+        const bubble = document.createElement('div');
+        bubble.style.background = '#f2f2f7';
+        bubble.style.color = '#111827';
+        bubble.style.borderRadius = '18px';
+        bubble.style.padding = '8px 12px';
+        bubble.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
         const dots = document.createElement('span');
         dots.textContent = '•••';
         dots.style.letterSpacing = '2px';
@@ -297,8 +303,9 @@
         label.textContent = (maskRoles ? unifiedDisplayName : 'Support') + ' is typing';
         label.style.fontSize = '12px';
         label.style.color = '#6b7280';
-        tip.appendChild(label);
-        tip.appendChild(dots);
+        bubble.appendChild(label);
+        bubble.appendChild(dots);
+        tip.appendChild(bubble);
         messages.appendChild(tip);
         const style = document.createElement('style');
         style.textContent = '@keyframes por-dots { 0%{opacity:.2} 50%{opacity:1} 100%{opacity:.2} }';
@@ -396,8 +403,10 @@
           await ensureConversation();
         }
         if (autoOpen.greeting) {
-          // send greeting into pipeline so it mirrors to Slack and logs properly
+          // enqueue greeting into pipeline like a real agent message
           addMessage('agent', autoOpen.greeting);
+          try { await fetch(backendOrigin + '/api/chat/send', { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ conversation_id: conversationId, text: autoOpen.greeting }) }); } catch {}
+          try { await fetch(backendOrigin + '/api/ai/stream'+currentQuery(), { method:'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ conversation_id: conversationId }) }); } catch {}
         }
       }, autoOpen.delayMs);
     }
